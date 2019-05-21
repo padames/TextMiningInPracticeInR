@@ -1,0 +1,86 @@
+---
+title: "Delta Analysys"
+author: "P. Adames"
+date: "May 21, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Set Options
+options(stringsAsFactors = FALSE)
+Sys.setlocale('LC_ALL', 'C')
+
+library(stringi)
+library(stringr)
+library(qdap)
+library(curl)
+library(tm)
+
+source("Helpers.R")
+```
+
+
+## Analysis from a clean data file of Delta Airlines
+
+# Step 1
+
+The data for these exercises in test mining can be found in Ted Kwartler's Github repo.
+I proceeded to fork it and then point to the appropriate file in `raw` format to get the text
+instead of the html content used to display it in the web page.
+
+The most straight forward approach is to use the curl library through the R bindings to read all of the
+comma separated values in file. The main advantage is that curl identifies the type of content and parses
+it correctly.
+
+```{r import data}
+text.df <- read.csv(curl("https://raw.githubusercontent.com/padames/text_mining/master/oct_delta.csv"), header = T, stringsAsFactors = F)
+```
+```{r data stats, echo=FALSE}
+print(paste0("Size of data frame read in KB: ", object.size(text.df)/1000))
+print(paste0("Number of rows and columns in data frame: (", nrow(text.df), ",", ncol(text.df), ")"))
+```
+The columns in this data frame are five: `r names(text.df)`. Only the last one is required to continue doing the
+text mining of the tweets. 
+Thus, a data frame with only the columns `doc_id` and `text` is created to use as input for the
+functions in the `tm` package.
+
+```{r data frame for text mining}
+df <- data.frame(doc_id = seq(1:nrow(text.df)), # a numeric index
+                 text = text.df$text) # the vector of 1377 tweets
+```
+
+## Step 2
+
+The latest version of `tm`, 0.7-6, changed the way the virtual corpus is created by eliminating the 
+need for a reader closure to be provided with information on the columns to be parsed as the index and the actual text.
+Now, provided the data frame has the names `doc_id` and `text`, the function will be able to extarct the 
+information correctly.
+
+```{r corpus creation}
+corpus <- VCorpus(DataframeSource(df))
+```
+
+## Step 3
+
+The corpus is cleaned up using auxiliary functions found in the 
+external file `Helpers.R` which is sourced at the beginning of this file.
+
+```{r cleanup}
+corpus.clean <- clean.corpus(corpus)
+```
+
+To test that we really clean the corpus a simple test is run, you can try different values of `tweet_number` between 1 and 1377:
+
+```{r test cleanup}
+tweet_number = 1045
+not_cleaned <- corpus[tweet_number][[1]]$content
+cleaned <- corpus.clean[tweet_number][[1]]$content
+test_of_equality <- not(identical( cleaned, not_cleaned))
+```
+The tests give the following results for tweet number `r tweet_number`:
+```{r test cleanup result, echo=F}
+print( paste0("Tweet '", tweet_number, "' was cleaned: ", test_of_equality))
+print(paste0("tweet['", tweet_number, "'] original; ", not_cleaned))
+print(paste0("tweet['", tweet_number, "'] cleaned; ", cleaned))
+```
