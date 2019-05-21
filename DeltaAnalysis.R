@@ -12,6 +12,8 @@ library(qdap)
 library(curl)
 library(tm)
 
+source("Helpers.R")
+
 # STEP 0: read the csv file (already cleand up by Ted Kwartler)
 # https://stackoverflow.com/a/31178716/1585486
 text.df <- read.csv(curl("https://raw.githubusercontent.com/padames/text_mining/master/oct_delta.csv"), header = T, stringsAsFactors = F)
@@ -32,8 +34,12 @@ corpus <- VCorpus(DataframeSource(df))
 
 # STEP 2: Clean up the corpus
 
-source("Helpers.R")
+corpus.clean <- clean.corpus(corpus)
 
-corpus <- clean.corpus(corpus)
+# create some output
 
-
+# test that the tweet text actually gets cleaned
+tweet_number = 64
+print( paste0("Tweet '", tweet_number, "' was cleaned: ", not(identical(corpus.clean[tweet_number][[1]]$content, corpus[tweet_number][[1]]$content) ) ) )
+print(paste0("tweet['", tweet_number, "'] cleaned; ", corpus.clean[tweet_number][[1]]$content))
+print(paste0("tweet['", tweet_number, "'] original; ", corpus[tweet_number][[1]]$content))
