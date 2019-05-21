@@ -97,7 +97,7 @@ To test that we really clean the corpus a simple test is run, you can try differ
 tweet_number = 1045
 not_cleaned <- corpus[tweet_number][[1]]$content
 cleaned <- corpus.clean[tweet_number][[1]]$content
-test_of_equality <- not(identical( cleaned, not_cleaned))
+test_of_equality <- !(identical( cleaned, not_cleaned))
 ```
 The tests give the following results for tweet number `r tweet_number`:
 ```{r test cleanup result, echo=F}
@@ -129,6 +129,7 @@ Now for comparison let's look at the average number of characters after cleaning
 clean.dataframe <- data.frame(text=unlist(sapply(corpus.clean, `[`, "content")))
 round(mean(nchar(clean.dataframe[,1])), digits = 0)
 ```
+A substantial reduction in verbosity but not as good an indicator of how much it is needed to communicate with humans using Tweeter.
 
 ## Question 2
 
