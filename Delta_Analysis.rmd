@@ -1,5 +1,5 @@
 ---
-title: "Delta Analysys"
+title: "Text Mining Delta Airlines Tweets from 2015"
 author: "P. Adames"
 date: "May 21, 2019"
 output: html_document
@@ -21,17 +21,38 @@ source("Helpers.R")
 ```
 
 
-## Analysis from a clean data file of Delta Airlines
+# Analysis from a clean data file of Delta Airlines
 
-# Step 1
+Text mining among this curated sample of Tweets for the month of October 
+from the Delta Airlines Customer Service team 
+looks to answer a few relevant questions for other similar teams.
 
-The data for these exercises in test mining can be found in Ted Kwartler's Github repo.
-I proceeded to fork it and then point to the appropriate file in `raw` format to get the text
-instead of the html content used to display it in the web page.
+1. What is the average length of the customer service reply in this social media platform?
+2. What links were referenced most often?
+3. How many team members are needed for a similar size of operation?
+4. How many social media responses per customer service representative are reasonable?
 
-The most straight forward approach is to use the curl library through the R bindings to read all of the
-comma separated values in file. The main advantage is that curl identifies the type of content and parses
-it correctly.
+Some of these can be addressed without the full data mining preprocessing, actually
+the dates are critical for questions 1 and 4 so they are better answered before doing the 
+preparation and cleaning steps.
+
+For the sake of completeness though, those steps are shown below.
+
+# Preparing and Cleaning the data
+
+The data for these exercises in text mining can be found in [Ted Kwartler's Github repo](https://github.com/kwartler/text_mining).
+The tweets are curated by carefully filtering those for the month of October, 2015. Their date is part of the information collected.
+It's a good idea to fork the original repo and use the forked version in case the original author takes his repo down.
+
+## Step 1
+
+The most straight forward approach to fetching the data directly from a Github repository 
+and reading it into a comma separated text file, is to use the curl library through R.
+The main advantage is that curl identifies the type of content and parses it correctly without
+much intervention from the user.
+Care should be taken to reference the **raw** version of the text file, instead of the html rendition
+of it that the hosting website provides to display the information in a human readable form through web browsers.
+
 
 ```{r import data}
 text.df <- read.csv(curl("https://raw.githubusercontent.com/padames/text_mining/master/oct_delta.csv"), header = T, stringsAsFactors = F)
@@ -84,3 +105,36 @@ print( paste0("Tweet '", tweet_number, "' was cleaned: ", test_of_equality))
 print(paste0("tweet['", tweet_number, "'] original; ", not_cleaned))
 print(paste0("tweet['", tweet_number, "'] cleaned; ", cleaned))
 ```
+
+# Analysis 
+
+Here are answers from doing some text digging.
+
+## What is the average length of the customer service reply in this social media platform?
+
+Assuming that each tweet represents one single interaction with a customer then the average length of each 
+represents the answer to this question. Tweet limits the length of each response to a maximum of 280 characters ([Tweeter increases length][ref1]).
+
+Working on the original Tweets, inspection of the data frame shows that the column named `text` has all the tweets.
+Since it is a vector of strings the vectorized funcion `nchar` can be used to read the length in characters of each
+tweet and return a vector of those values. After that calculating their mean is straight forward:
+
+```{r average length of a tweet}
+round(x = mean(nchar(text.df$text)), digits = 0)
+```
+
+Now for comparison let's look at the average number of characters after cleaning the tweets for bag of words text mining:
+
+```{r average length after cleaning}
+clean.dataframe <- data.frame(text=unlist(sapply(corpus.clean, `[`, "content")))
+round(mean(nchar(clean.dataframe[,1])), digits = 0)
+```
+
+## Question 2
+
+## Question 3
+
+## Question 4
+
+
+[ref1]: https://bgr.com/2018/02/08/twitter-character-limit-280-vs-140-user-engagement/ "Tweeter increases length"
