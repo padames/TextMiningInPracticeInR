@@ -230,7 +230,7 @@ $(document).ready(function () {
 <pre class="r"><code>tweet_number = 1045
 not_cleaned &lt;- corpus[tweet_number][[1]]$content
 cleaned &lt;- corpus.clean[tweet_number][[1]]$content
-test_of_equality &lt;- not(identical( cleaned, not_cleaned))</code></pre>
+test_of_equality &lt;- !(identical( cleaned, not_cleaned))</code></pre>
 <p>The tests give the following results for tweet number 1045:</p>
 <pre><code>## [1] &quot;Tweet '1045' was cleaned: TRUE&quot;</code></pre>
 <pre><code>## [1] &quot;tweet['1045'] original; @Kyrrie_Twin Kyrrie, what will the compensation be for? *VM&quot;</code></pre>
@@ -250,6 +250,7 @@ test_of_equality &lt;- not(identical( cleaned, not_cleaned))</code></pre>
 <pre class="r"><code>clean.dataframe &lt;- data.frame(text=unlist(sapply(corpus.clean, `[`, &quot;content&quot;)))
 round(mean(nchar(clean.dataframe[,1])), digits = 0)</code></pre>
 <pre><code>## [1] 60</code></pre>
+<p>A substantial reduction in verbosity but not as good an indicator of how much it is needed to communicate with humans using Tweeter.</p>
 </div>
 <div id="question-2" class="section level2">
 <h2>Question 2</h2>
