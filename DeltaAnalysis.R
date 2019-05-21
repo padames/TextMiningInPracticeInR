@@ -9,3 +9,8 @@ Sys.setlocale('LC_ALL', 'C')
 library(stringi)
 library(stringr)
 library(qdap)
+library(curl)
+
+text.df2 <- read.csv(curl("https://raw.githubusercontent.com/padames/text_mining/master/oct_delta.csv"), header = T, stringsAsFactors = F)
+
+
