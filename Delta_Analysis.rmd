@@ -156,15 +156,26 @@ This customer service agent cohort is `r ratio.phone.to.web` times more likely t
 
 ## How many social media responses per customer service representative are reasonable?
 
-For this Ted Kwartler suggests on page 32 of his [book][ref2], using a function to detect the last two characters of every tweet, hoping to capture the initials used for each agent.
-Here the last word of the whole tweet is extracted using `stri_extract_all_boundaries` from the `stringi` package.
+For this Ted Kwartler suggests on page 32 of his [book][ref2], using a function to detect the last two characters of every tweet, hoping to capture the initials used for each agent. Here his code to extract the last two letters of the tweet but used over the entire cleaned data frame:
+```{r responses per agent with Kwartler code}
+last.chars <- function(text, num) {
+  last <- substr(text, nchar(text) - num + 1, nchar(text))
+  return(last)
+}
+tbl1 <- table(Filter(x = last.chars(clean.dataframe[,1], 2), min = 2))
+tbl1[order(-tbl1)]
+```
+
+Here the last word of the whole tweet is extracted using `stri_extract_last_words` from the `stringi` package.
 This hopefully covers the case of variable number of letters or non-standard initials. 
 
 ```{r responses per agent}
-initials <- sapply(X = stri_extract_all_boundaries(clean.dataframe[,1]), FUN = function(vs) {lvs <- length(vs); vs[lvs] } )
-table(initials)
+initials <- stri_extract_last_words(clean.dataframe[,1])
+tbl2 <- table(Filter(x = initials, min = 2, max = 2))
+tbl2[order(-tbl2)]
 ```
 
+Either way agent `pl` sems to be the hardest working in the group.
 
 [ref1]: https://bgr.com/2018/02/08/twitter-character-limit-280-vs-140-user-engagement/ "Tweeter increases length"
 [ref2]: https://www.amazon.com/Text-Mining-Practice-Ted-Kwartler/dp/1119282012 
