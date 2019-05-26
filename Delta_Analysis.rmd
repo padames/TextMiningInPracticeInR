@@ -154,6 +154,7 @@ This customer service agent cohort is `r ratio.phone.to.web` times more likely t
 ## How many team members are needed for a similar size of operation?
 
 
+
 ## How many social media responses per customer service representative are reasonable?
 
 For this Ted Kwartler suggests on page 32 of his [book][ref2], using a function to detect the last two characters of every tweet, hoping to capture the initials used for each agent. Here his code to extract the last two letters of the tweet but used over the entire cleaned data frame:
@@ -175,7 +176,10 @@ tbl2 <- table(Filter(x = initials, min = 2, max = 2))
 tbl2[order(-tbl2)]
 ```
 
-Either way agent `pl` sems to be the hardest working in the group.
+The average response per agent over 15 days is `r round(mean(tbl1),0)` with Kwartler's function and `r round(mean(tbl2),0)` with the new code using library `stringi`'s function. Either way agent `pl` seems to be the hardest working in the group with 104 responses over this period. If especific work loads needed to be analyzed on particular peridos of time like weekends then the original data frame needs to be subset based on the time window to be considered. 
+
+Some tweets are continuations of previous ones and they end with `\2` or `\3` to indicate the sequence after the agent's two-letter signature, this would require further examination to see how it affects the averages computed here. Numbers and other symbols are removed in the clean up procedure so this would have to be done on the original tweets.
+
 
 [ref1]: https://bgr.com/2018/02/08/twitter-character-limit-280-vs-140-user-engagement/ "Tweeter increases length"
 [ref2]: https://www.amazon.com/Text-Mining-Practice-Ted-Kwartler/dp/1119282012 
