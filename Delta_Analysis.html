@@ -247,7 +247,7 @@ test_of_equality &lt;- !(identical( cleaned, not_cleaned))</code></pre>
 <pre class="r"><code>round(x = mean(nchar(text.df$text)), digits = 0)</code></pre>
 <pre><code>## [1] 92</code></pre>
 <p>Now for comparison let’s look at the average number of characters after cleaning the tweets for bag of words text mining:</p>
-<pre class="r"><code>clean.dataframe &lt;- data.frame(text=unlist(sapply(corpus.clean, `[`, &quot;content&quot;)))
+<pre class="r"><code>clean.dataframe &lt;- data.frame(text = unlist(sapply(corpus.clean, `[`, &quot;content&quot;)))
 round(mean(nchar(clean.dataframe[,1])), digits = 0)</code></pre>
 <pre><code>## [1] 60</code></pre>
 <p>A substantial reduction in verbosity but not as good an indicator of how much it is needed to communicate with humans using Tweeter.</p>
@@ -268,11 +268,143 @@ paste0(&quot;Phone number to web site ratio: &quot;, ratio.phone.to.web) </code>
 <pre><code>## [1] &quot;Phone number to web site ratio: 3.4&quot;</code></pre>
 <p>This customer service agent cohort is 3.4 times more likely to give clients a phone number to address or follow up their concerns than to refer them to a web site page to do the same.</p>
 </div>
-<div id="question-3" class="section level2">
-<h2>Question 3</h2>
+<div id="how-many-team-members-are-needed-for-a-similar-size-of-operation" class="section level2">
+<h2>How many team members are needed for a similar size of operation?</h2>
 </div>
-<div id="question-4" class="section level2">
-<h2>Question 4</h2>
+<div id="how-many-social-media-responses-per-customer-service-representative-are-reasonable" class="section level2">
+<h2>How many social media responses per customer service representative are reasonable?</h2>
+<p>For this Ted Kwartler suggests on page 32 of his <a href="https://www.amazon.com/Text-Mining-Practice-Ted-Kwartler/dp/1119282012">book</a>, using a function to detect the last two characters of every tweet, hoping to capture the initials used for each agent. Here the last word of the whole tweet is extracted using <code>stri_extract_all_boundaries</code> from the <code>stringi</code> package. This hopefully covers the case of variable number of letters or non-standard initials.</p>
+<pre class="r"><code>initials &lt;- sapply(X = stri_extract_all_boundaries(clean.dataframe[,1]), FUN = function(vs) {lvs &lt;- length(vs); vs[lvs] } )
+table(initials)</code></pre>
+<pre><code>## initials
+##                      a                       aa                     aa  
+##                       1                      62                      12 
+##                      ab                     ab                 account  
+##                      42                       1                       1 
+##                      ad                 advise                 airport  
+##                      12                       1                       4 
+##             allierands                      am                     amp  
+##                       1                       1                       5 
+##              apologies               apologize                     ask  
+##                       7                       1                       1 
+##                 assist              assistance              associated  
+##                       1                       3                       1 
+##               attached            availability               available  
+##                       1                       1                       3 
+##                   back                 baggage                       bb 
+##                       1                       2                      21 
+##                     bb                  behalf                booking   
+##                       3                       1                       1 
+##                    box                       c                   call   
+##                       1                       1                       1 
+##                    can                    care                 central  
+##                       3                       1                       1 
+##                 change                  charge                       ck 
+##                       1                       1                       8 
+##                  class                 cleared                       cm 
+##                       1                       1                      18 
+##               comments               complaint              compliment  
+##                       1                       2                       2 
+##             conditions                 confirm            confirmation  
+##                       1                       1                       4 
+##                   copy               corporate                 correct  
+##                       1                       1                       1 
+##                      cs                     cs               currently  
+##                       1                       1                       1 
+##               customer  customercaregogoaircom               customers  
+##                       3                       1                       2 
+##                      dd                     dd              definitely  
+##                      55                       2                       1 
+##                   desk                  direct                directly  
+##                       2                       1                       1 
+##                     dm                       dr                      ec 
+##                       1                       7                      26 
+##                     ec                   email                   every  
+##                       7                       1                       1 
+##                 exceed                 excited              experience  
+##                       1                       1                       1 
+##                  fares                    file                     fit  
+##                       2                       1                       1 
+##                 flight                  follow                    form  
+##                       3                       1                       2 
+##                   goal                   going                   happy  
+##                       1                       1                       2 
+##                   hear                    help                 holders  
+##                       2                       2                       1 
+##                however        httptcoakueaixrx          httptcoexpaejz  
+##                       1                       1                       1 
+##                      hw          inconvenience              instructed  
+##                      14                       2                       1 
+##              itinerary                       jh                     jh  
+##                       1                      13                      32 
+##                      jj                      kc                     kc  
+##                      10                      49                       1 
+##                      km                   know            kristenbaker  
+##                      27                       2                       1 
+##                   link                  listed                 located  
+##                       3                       1                       1 
+##                   look                 loyalty                       ls 
+##                       5                       5                      28 
+##                   make                       md                     md  
+##                       1                      23                      14 
+##                 member                 message                      mi  
+##                       4                       1                       1 
+##                   miss                       ml                   mqms  
+##                       1                      56                       1 
+##                      mr                     mr                       ng 
+##                      52                       1                      81 
+##                     ng                 nmsmith                  number  
+##                      14                       1                       4 
+##              number                      offer                    open  
+##                       1                       1                       1 
+##                 option                       p                 parking  
+##                       1                       1                       1 
+##                   pass              passengers               permitted  
+##                       1                       1                       1 
+##                      pl                     pl                platform  
+##                      95                       9                       1 
+##                 please                pleasure                     pls  
+##                       3                       1                       4 
+##               position                precheck                 pricing  
+##                       1                       1                       1 
+##                process               purchases                       qb 
+##                       1                       1                       4 
+##                      rb                     rb                       rd 
+##                      29                       7                      52 
+##                     rd                 reached               rechecked  
+##                       3                       1                       1 
+##                 report                 resolve                  return  
+##                       1                       1                       1 
+##                 review                       rs                     rs  
+##                       2                      40                      25 
+##                      sb                     sb                       sd 
+##                      39                       8                      22 
+##                     sd                 seating                 service  
+##                       4                       1                       1 
+##                  share                    soon                   sorry  
+##                       1                       1                       1 
+##                   spam                   staff                  status  
+##                       1                       1                       1 
+##                support                       t                    take  
+##                       1                       1                       2 
+##                   team                   teams                       th 
+##                       6                       1                       1 
+##                 thanks                    time                   times  
+##                       1                       1                       3 
+##                  today                 tonight                       tp 
+##                       1                       1                       6 
+##                     tp            troubleshoot                  update  
+##                       1                       1                       1 
+##                updates                      us                       vi 
+##                       1                       2                       8 
+##                    via                       vm                     vm  
+##                       2                      50                       9 
+##                  voice                  waiver                 weather  
+##                       1                       1                       1 
+##                website                       wg                     wg  
+##                       1                      58                       1 
+##                   will                    work                 written  
+##                       3                       2                       1</code></pre>
 </div>
 </div>
 

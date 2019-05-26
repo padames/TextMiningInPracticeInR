@@ -126,7 +126,7 @@ round(x = mean(nchar(text.df$text)), digits = 0)
 Now for comparison let's look at the average number of characters after cleaning the tweets for bag of words text mining:
 
 ```{r average length after cleaning}
-clean.dataframe <- data.frame(text=unlist(sapply(corpus.clean, `[`, "content")))
+clean.dataframe <- data.frame(text = unlist(sapply(corpus.clean, `[`, "content")))
 round(mean(nchar(clean.dataframe[,1])), digits = 0)
 ```
 A substantial reduction in verbosity but not as good an indicator of how much it is needed to communicate with humans using Tweeter.
@@ -151,9 +151,19 @@ paste0("Phone number to web site ratio: ", ratio.phone.to.web)
 
 This customer service agent cohort is `r ratio.phone.to.web` times more likely to give clients a phone number to address or follow up their concerns than to refer them to a web site page to do the same.
 
-## Question 3
+## How many team members are needed for a similar size of operation?
 
-## Question 4
+
+## How many social media responses per customer service representative are reasonable?
+
+For this Ted Kwartler suggests on page 32 of his [book][ref2], using a function to detect the last two characters of every tweet, hoping to capture the initials used for each agent.
+Here the last word of the whole tweet is extracted using `stri_extract_all_boundaries` from the `stringi` package.
+This hopefully covers the case of variable number of letters or non-standard initials. 
+
+```{r responses per agent}
+initials <- sapply(X = stri_extract_all_boundaries(clean.dataframe[,1]), FUN = function(vs) {lvs <- length(vs); vs[lvs] } )
+table(initials)
+```
 
 
 [ref1]: https://bgr.com/2018/02/08/twitter-character-limit-280-vs-140-user-engagement/ "Tweeter increases length"
