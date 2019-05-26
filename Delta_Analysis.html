@@ -268,9 +268,6 @@ paste0(&quot;Phone number to web site ratio: &quot;, ratio.phone.to.web) </code>
 <pre><code>## [1] &quot;Phone number to web site ratio: 3.4&quot;</code></pre>
 <p>This customer service agent cohort is 3.4 times more likely to give clients a phone number to address or follow up their concerns than to refer them to a web site page to do the same.</p>
 </div>
-<div id="how-many-team-members-are-needed-for-a-similar-size-of-operation" class="section level2">
-<h2>How many team members are needed for a similar size of operation?</h2>
-</div>
 <div id="how-many-social-media-responses-per-customer-service-representative-are-reasonable" class="section level2">
 <h2>How many social media responses per customer service representative are reasonable?</h2>
 <p>For this Ted Kwartler suggests on page 32 of his <a href="https://www.amazon.com/Text-Mining-Practice-Ted-Kwartler/dp/1119282012">book</a>, using a function to detect the last two characters of every tweet, hoping to capture the initials used for each agent. Here his code to extract the last two letters of the tweet but used over the entire cleaned data frame:</p>
@@ -298,6 +295,10 @@ tbl2[order(-tbl2)]</code></pre>
 ##   1</code></pre>
 <p>The average response per agent over 15 days is 42 with Kwartler’s function and 37 with the new code using library <code>stringi</code>’s function. Either way agent <code>pl</code> seems to be the hardest working in the group with 104 responses over this period. If especific work loads needed to be analyzed on particular peridos of time like weekends then the original data frame needs to be subset based on the time window to be considered.</p>
 <p>Some tweets are continuations of previous ones and they end with <code>\2</code> or <code>\3</code> to indicate the sequence after the agent’s two-letter signature, this would require further examination to see how it affects the averages computed here. Numbers and other symbols are removed in the clean up procedure so this would have to be done on the original tweets.</p>
+</div>
+<div id="how-many-team-members-are-needed-for-a-similar-size-of-operation" class="section level2">
+<h2>How many team members are needed for a similar size of operation?</h2>
+<p>According to Kwartler calculations there are 33 agents to process 1009 interactions through Tweeter. The new code indicated 37 agents processing 1169 interactions over the 15 days of data availble.</p>
 </div>
 </div>
 
