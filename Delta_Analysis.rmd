@@ -34,10 +34,10 @@ looks to answer a few relevant questions:
 
 Some of these can be addressed without the full data mining preprocessing, actually
 the dates are useful for identifying weekly patterns for the user interaction load through
-this platform, as could be the case if one wanted to go deeper into question 3 to assess
-the workforce for weekends and opposed to weekdays, for instance.
-Those questions can be answered before doing the preparation and cleaning steps, however,
-for the sake of completeness though, those steps are shown below first.
+this platform. This could be the case if one wanted to go deeper into question 3 to assess
+the workforce required for weekends in contrast to weekdays.
+These questions can be answered before doing the preparation and cleaning steps, however,
+for the sake of completeness and comparison, those steps are shown below first.
 
 # Preparing and Cleaning the data
 
