@@ -300,6 +300,58 @@ tbl2[order(-tbl2)]</code></pre>
 <p>According to Kwartler calculations there are 33 agents to process 1009 interactions through Tweeter. The new code indicated 37 agents processing 1169 interactions over the 15 days of data availble.</p>
 </div>
 </div>
+<div id="term-frequency-analysis" class="section level1">
+<h1>Term frequency analysis</h1>
+<p>The term document matrix contains the incidence of each individual word on each document, in this case each Tweet.</p>
+<pre class="r"><code>tdm &lt;- TermDocumentMatrix(corpus.clean)
+inspect(tdm)</code></pre>
+<pre><code>## &lt;&lt;TermDocumentMatrix (terms: 2626, documents: 1377)&gt;&gt;
+## Non-/sparse entries: 10362/3605640
+## Sparsity           : 100%
+## Maximal term length: 24
+## Weighting          : term frequency (tf)
+## Sample             :
+##               Docs
+## Terms          110 113 129 287 306 308 373 507 89 91
+##   can            0   0   1   0   0   0   0   0  0  0
+##   confirmation   0   0   0   0   0   0   0   1  0  0
+##   flight         0   0   0   0   0   0   1   0  0  0
+##   hear           1   0   0   0   0   0   0   0  0  1
+##   number         0   0   0   0   0   0   0   0  0  0
+##   please         0   0   0   0   0   0   0   0  0  0
+##   pls            1   1   1   0   1   0   0   1  0  1
+##   sorry          1   0   0   0   0   0   0   0  0  0
+##   team           0   0   0   0   0   0   0   0  0  1
+##   will           0   0   0   0   0   0   0   0  0  1</code></pre>
+<p>Now the TDM is turned into a matrix and each row is summed to obtain a vector with the number of times each term appears in all of the documents. From this vector a data frame can be built to make a graphical representation of the most common terms.</p>
+<pre class="r"><code>tdm.m &lt;- as.matrix(tdm)
+frequency &lt;- rowSums(tdm.m)
+frequencies.df &lt;- data.frame( name = names(frequency), frequency = frequency)
+frequencies.df &lt;- frequencies.df[order(frequency, decreasing = T), ]
+frequencies.df[1:20,]</code></pre>
+<pre><code>##                      name frequency
+## please             please       221
+## can                   can       190
+## sorry               sorry       182
+## will                 will       159
+## pls                   pls       153
+## hear                 hear       151
+## team                 team       137
+## confirmation confirmation       127
+## flight             flight       106
+## number             number       100
+## assistance     assistance        91
+## thanks             thanks        90
+## let                   let        88
+## apologies       apologies        87
+## know                 know        86
+## happy               happy        79
+## follow             follow        78
+## followdm         followdm        76
+## look                 look        76
+## amp                   amp        72</code></pre>
+<p>The mean term frequency is 4. Considering the 20 most frequent words reveals nothing alien to the context of an airline customer service operation. However it can be inferred that many of the interactions on the platform are related to correcting or acknowledging errors or inconveniences for the customers as the words <em>sorry</em> and <em>apology</em> appears so prominently.</p>
+</div>
 
 
 

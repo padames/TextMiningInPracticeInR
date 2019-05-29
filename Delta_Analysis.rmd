@@ -184,5 +184,31 @@ Some tweets are continuations of previous ones and they end with `\2` or `\3` to
 According to Kwartler calculations there are `r length(tbl1)` agents to process `r sum(tbl1) - 368` interactions through Tweeter. The new code indicated `r length(tbl2)` agents processing `r sum(tbl2) - 208` interactions over the 15 days of data availble.
 
 
+# Term frequency analysis
+
+The term document matrix contains the incidence of each individual word on each document, in this case each Tweet.
+
+```{r tdm}
+tdm <- TermDocumentMatrix(corpus.clean)
+inspect(tdm)
+```
+
+Now the TDM is turned into a matrix and each row is summed to obtain a vector with the number of times each term appears in all of the documents.
+From this vector a data frame can be built to make a graphical representation of the most common terms.
+
+```{r term frequency}
+tdm.m <- as.matrix(tdm)
+frequency <- rowSums(tdm.m)
+frequencies.df <- data.frame( name = names(frequency), frequency = frequency)
+frequencies.df <- frequencies.df[order(frequency, decreasing = T), ]
+frequencies.df[1:20,]
+```
+
+The mean term frequency is `r round(summary(frequency)['Mean'],0)`. Considering the 20 most
+frequent words reveals nothing alien to the context of an airline customer service operation.
+However it can be inferred that many of the interactions on the platform are related to correcting
+or acknowledging errors or inconveniences for the customers as the words *sorry* and *apology*
+ appears so prominently. 
+
 [ref1]: https://bgr.com/2018/02/08/twitter-character-limit-280-vs-140-user-engagement/ "Tweeter increases length"
 [ref2]: https://www.amazon.com/Text-Mining-Practice-Ted-Kwartler/dp/1119282012 
