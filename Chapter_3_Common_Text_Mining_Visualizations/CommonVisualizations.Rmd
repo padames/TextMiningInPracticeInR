@@ -49,5 +49,9 @@ Now we can write the new code to build the `ggplot` visualization:
 ```{r ggplot visualization}
 frequencies.df$word <- factor(x = frequencies.df$word, 
                               levels = unique(as.character(frequencies.df$word)))
-
+ggplot(frequencies.df[1:20,], aes(x = word, y = frequency)) +
+  geom_col(stat = "identity", colour = "darkred") +
+  coord_flip() +
+  theme_gdocs() +
+  geom_text(aes(label = frequency), colour = "white", hjust = 1.25, size = 5.0 )
 ```
