@@ -1,0 +1,53 @@
+---
+title: "Common Text Mining Visualizations"
+author: "P. Adames"
+date: "June 3, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Set Options
+options(stringsAsFactors = FALSE)
+Sys.setlocale('LC_ALL', 'C')
+
+library(stringi)
+library(stringr)
+library(qdap)
+library(curl)
+library(ggplot2)
+library(ggthemes)
+library(tm)
+
+source("../Chapter\ 2\ Basics\ of\ Text\ Mining/Helpers.R")
+```
+## Text Frequency revisited
+
+To solve the exercises from this chapter we will be reusing the code to clean up a corpus of text 
+from Chapter 2: Basics of Text Mining. How effective data communicates meaning to any given 
+audiece is a strong function of the skills and habits when it comes to consuming and interpreting information. This may have a decisive impact on the decisions made based on the data.
+
+To give a concrete example of this, we will contrast the table of top 20 most frequent terms in the 
+corpus of Delta Airlines Customer Service Tweets presented in the previous chapter with a plot of the same data.
+
+```{r summary of cleaup code and term frequency data frame}
+text.df <- read.csv(curl("https://raw.githubusercontent.com/padames/text_mining/master/oct_delta.csv"),
+                    header = T, stringsAsFactors = F)
+df <- data.frame(doc_id = seq(1:nrow(text.df)), # a numeric index
+                 text = text.df$text) # the vector of 1377 tweets
+corpus <- VCorpus(DataframeSource(df))
+corpus.clean <- clean.corpus(corpus)
+tdm <- TermDocumentMatrix(corpus.clean)
+tdm.m <- as.matrix(tdm)
+term.freq <- rowSums(tdm.m)
+frequencies.df <- data.frame( word = names(term.freq), frequency = term.freq)
+frequencies.df <- frequencies.df[order(term.freq, decreasing = T), ]
+```
+
+Now we can write the new code to build the `ggplot` visualization:
+
+```{r ggplot visualization}
+frequencies.df$word <- factor(x = frequencies.df$word, 
+                              levels = unique(as.character(frequencies.df$word)))
+
+```

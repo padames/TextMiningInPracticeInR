@@ -56,7 +56,8 @@ of it that the hosting website provides to display the information in a human re
 
 
 ```{r import data}
-text.df <- read.csv(curl("https://raw.githubusercontent.com/padames/text_mining/master/oct_delta.csv"), header = T, stringsAsFactors = F)
+text.df <- read.csv(curl("https://raw.githubusercontent.com/padames/text_mining/master/oct_delta.csv"),
+                    header = T, stringsAsFactors = F)
 ```
 ```{r data stats, echo=FALSE}
 print(paste0("Size of data frame read in KB: ", object.size(text.df)/1000))
