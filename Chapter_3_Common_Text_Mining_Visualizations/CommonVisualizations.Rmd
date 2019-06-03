@@ -44,13 +44,14 @@ frequencies.df <- data.frame( word = names(term.freq), frequency = term.freq)
 frequencies.df <- frequencies.df[order(term.freq, decreasing = T), ]
 ```
 
-Now we can write the new code to build the `ggplot` visualization:
+Now we can write the new code to build the `ggplot` visualization, notice the use of `geom_col` instead
+of `geom_bar(stat="identity")` as per the original book example:
 
 ```{r ggplot visualization}
 frequencies.df$word <- factor(x = frequencies.df$word, 
                               levels = unique(as.character(frequencies.df$word)))
 ggplot(frequencies.df[1:20,], aes(x = word, y = frequency)) +
-  geom_col(stat = "identity", colour = "darkred") +
+  geom_col(colour = "darkred") +
   coord_flip() +
   theme_gdocs() +
   geom_text(aes(label = frequency), colour = "white", hjust = 1.25, size = 5.0 )
