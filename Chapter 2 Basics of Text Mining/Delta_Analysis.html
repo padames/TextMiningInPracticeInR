@@ -209,7 +209,8 @@ $(document).ready(function () {
 <div id="step-1" class="section level2">
 <h2>Step 1</h2>
 <p>The most straight forward approach to fetching the data directly from a Github repository and reading it into a comma separated text file, is to use the curl library through R. The main advantage is that curl identifies the type of content and parses it correctly without much intervention from the user. Care should be taken to reference the <strong>raw</strong> version of the text file, instead of the html rendition of it that the hosting website provides to display the information in a human readable form through web browsers.</p>
-<pre class="r"><code>text.df &lt;- read.csv(curl(&quot;https://raw.githubusercontent.com/padames/text_mining/master/oct_delta.csv&quot;), header = T, stringsAsFactors = F)</code></pre>
+<pre class="r"><code>text.df &lt;- read.csv(curl(&quot;https://raw.githubusercontent.com/padames/text_mining/master/oct_delta.csv&quot;),
+                    header = T, stringsAsFactors = F)</code></pre>
 <pre><code>## [1] &quot;Size of data frame read in KB: 256.2&quot;</code></pre>
 <pre><code>## [1] &quot;Number of rows and columns in data frame: (1377,5)&quot;</code></pre>
 <p>The columns in this data frame are five: weekday, month, date, year, text. Only the last one is required to continue doing the text mining of the tweets. Thus, a data frame with only the columns <code>doc_id</code> and <code>text</code> is created to use as input for the functions in the <code>tm</code> package.</p>

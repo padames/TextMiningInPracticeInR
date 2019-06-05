@@ -2,7 +2,9 @@
 title: "Common Text Mining Visualizations"
 author: "P. Adames"
 date: "June 3, 2019"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -22,6 +24,10 @@ library(tm)
 source("../Chapter\ 2\ Basics\ of\ Text\ Mining/Helpers.R")
 ```
 ## Text Frequency revisited
+
+Finding the most frequent terms across all documents in a bag of words analysis is the first step
+towards finding unusual features or to start exploring the reason for expected terms via associations.
+This analysis guides subsequent text mining efforts focusig on relevant terms instead of on perhaps intersting outliers but irrelevant nonetheless.  
 
 To solve the exercises from this chapter we will be reusing the code to clean up a corpus of text 
 from Chapter 2: Basics of Text Mining. How effective data communicates meaning to any given 
@@ -50,9 +56,54 @@ of `geom_bar(stat="identity")` as per the original book example:
 ```{r ggplot visualization}
 frequencies.df$word <- factor(x = frequencies.df$word, 
                               levels = unique(as.character(frequencies.df$word)))
-ggplot(frequencies.df[1:20,], aes(x = word, y = frequency)) +
-  geom_col(colour = "darkred") +
-  coord_flip() +
-  theme_gdocs() +
-  geom_text(aes(label = frequency), colour = "white", hjust = 1.25, size = 5.0 )
+ggplot(frequencies.df[1:20,], # pass data frame to create visualization from
+       aes(x = word, y = frequency)) + # define the aesthetics as specific columns of the data frame
+  geom_col(fill = "#FF9999", colour = "black") + # bars from the values of x (without transformations)
+  coord_flip() +  # exchanges position of x and y
+  theme_gdocs() + # predefined visual style for the plot mimicking Google Documents
+  geom_text(aes(label = frequency), colour = "black", hjust = 1.25, size = 5.0 ) # labels for bars
 ```
+
+Some parsing errors are apparent, for example the amp word is likely the \& symbol. Also it is confirmed
+that most of the tweets are discussions and apologies about flight and confirmation numbers.
+
+
+## Word Associations
+
+From the previous result one can see that the word *apologies* appears quite often. This is expected given
+the context of the DeltaAssit customer service airline context, however a valid question might be what are the agents apologizing for.
+
+Finding the correlation between the incidence vectors of two words is a measure of how associated their presence is per document in the corpus of documents. The `tm` package defines function `findAssocs` to do just this.
+[This stackoverflow answer](https://stackoverflow.com/a/43192064/1585486) sheds some ligth on the inner working of the function:
+
+> The math of findAssoc() is based on the standard function cor() in the stats package of R.
+> Given two numeric vectors, cor() computes their covariance divided by both the standard deviations.
+
+Let's try to answer the question using the function `findAssocs` with a threshold value of 0.11.
+This value depends on the corpus and the specific word, I suggest you try with higher values initially.
+
+```{r findAsscocs use}
+associations <- findAssocs(x = tdm, terms = 'apologies', corlimit = 0.11) # returns a list
+associations <- as.data.frame(associations) # converted to a data frame with one vector for a column 
+associations$terms <- row.names(x = associations) # adds new vector colomn of characters
+associations$terms <- factor(x = associations$terms, # turns the new column unequivocally into
+                             levels = associations$terms)  # factors
+associations <- associations[order(associations$terms,decreasing = T), ] # decreasing association 
+```
+
+Now let's build the visualization Kwatler shows, here with reproducible code:
+
+```{r word association visualization}
+ggplot(data = associations, mapping = aes(y = terms)) +
+  geom_point(data = associations, mapping = aes(x = apologies), size  = 5, colour = "#FF9999") +
+  theme_gdocs() +
+  geom_text(mapping = aes(x = apologies, label = apologies), colour = 'darkred', vjust = 2.0, size = 3) +
+  theme(text = element_text(size = 15), axis.title.y = element_blank())
+```
+
+The most correlated words with our target *apologies* are *delay* and *issues*. Also *latearriving*  appears among the third most associated words. The word *refund* appears among the 5 words closest to the 
+threashold value set to find associations. One may infer based on these findings that there is evidence 
+that Delta customer service agents do apologize for issues causing delays in arrivals and may offer refunds 
+to folow up the apology.
+These findings trigger more questions about how often these events happen and what consequences bring to the
+image and the bottom line of the company.
