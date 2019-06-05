@@ -1,8 +1,13 @@
 # Basics of Text Mining
-Exercises from Chapter Two of Ted Kwartler's book **Text Mining In Practice with R**
+Exercises from Chapter Two of Ted Kwartler's book **Text Mining In Practice with R**. 
+The code has been updated for changes in the way some functions of the package `tm` are used due to updates to the most recent version. Specifically the simplification of cotrol lists when calling the function `TermDocumentMatrix`. 
+
+There has been code reorganization by placing commong utility functions in a separate file and using `source(relative_path_to_file/Helpers.R` to bring the relevant functions into the scope of the files that need to use any of those functions.
+
+Whenever sensible there has been refactoring to favor the use of tidy pipe syntax `%>%` like in the function `clean.corpus` in the script `Helpers.R`. Other functions like `tryTolower` suffered minor refactoring that doe snot affect the original coding idea but hopefully make them easier to read.
 
 ## Reproducible exercise
 
-Using R Markdown to produce an HTML output file. 
+If you are inclined to reproduce these exercises, one way is to download the files and then ran **knitr** on the `.rmd` file to produce the corresponding `.html` file of the same name. An conenient way to do this is using RStudio (assuming you have it installed, there are Win, Mac, and Linux installers) and then selecting the drop down menu **File/Knit Document**, or using its keyboard shortcut **Ctrl+Shitf+K**. This will produce an HTML output file of the same name. 
 
-The result can be seen by pointing a browser to https://htmlpreview.github.io/?https://github.com/padames/TextMiningInPracticeInR/blob/master/Chapter_2_Basics_of_Text_Mining/Delta_Analysis.html
+My latest *knited* file can be seen by pointing a browser to https://htmlpreview.github.io/?https://github.com/padames/TextMiningInPracticeInR/blob/master/Chapter_2_Basics_of_Text_Mining/Delta_Analysis.html
