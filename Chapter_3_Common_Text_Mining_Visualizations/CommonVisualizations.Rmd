@@ -86,12 +86,12 @@ This value depends on the corpus and the specific word, I suggest you try with h
 associations <- findAssocs(x = tdm, terms = 'apologies', corlimit = 0.11) # returns a list
 associations <- as.data.frame(associations) # converted to a data frame with one vector for a column 
 associations$terms <- row.names(x = associations) # adds new vector colomn of characters
-associations$terms <- factor(x = associations$terms, # turns the new column unequivocally into
-                             levels = associations$terms)  # factors
-associations <- associations[order(associations$terms,decreasing = T), ] # decreasing association 
+associations$terms <- factor(x = associations$terms, # turns the new column unequivocally into factors
+                             levels = associations$terms)  
+associations <- associations[order(associations$terms,decreasing = T), ] # by decreasing association 
 ```
 
-Now let's build the visualization Kwatler shows, here with reproducible code:
+Now let's build the visualization Kwartler shows, here with reproducible code:
 
 ```{r word association visualization}
 ggplot(data = associations, mapping = aes(y = terms)) +
@@ -101,9 +101,13 @@ ggplot(data = associations, mapping = aes(y = terms)) +
   theme(text = element_text(size = 15), axis.title.y = element_blank())
 ```
 
-The most correlated words with our target *apologies* are *delay* and *issues*. Also *latearriving*  appears among the third most associated words. The word *refund* appears among the 5 words closest to the 
-threashold value set to find associations. One may infer based on these findings that there is evidence 
-that Delta customer service agents do apologize for issues causing delays in arrivals and may offer refunds 
-to folow up the apology.
-These findings trigger more questions about how often these events happen and what consequences bring to the
-image and the bottom line of the company.
+The term *apologies* correlates most strongly with the words *delay* and *issues*. Also *latearriving*  appears among the third most associated words. The word *refund* appears among the 5 words closest to the 
+minimum threashold value set to find associations. 
+One may infer based on these limited findings that there is evidence that Delta Airlines customer service
+agents do apologize for issues causing delays in arrivals and may offer refunds to folow up the apology.
+
+These findings may trigger more questions about how often these events happen and what consequences 
+bring to the customer satisfaction and the bottom line of the company.
+
+
+## Word networks
