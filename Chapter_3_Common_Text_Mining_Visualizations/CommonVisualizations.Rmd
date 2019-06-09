@@ -21,7 +21,7 @@ library(ggplot2)
 library(ggthemes)
 library(tm)
 
-source("../Chapter\ 2\ Basics\ of\ Text\ Mining/Helpers.R")
+source("../Chapter_2_Basics_of_Text_Mining/Helpers.R")
 ```
 ## Text Frequency revisited
 
@@ -111,3 +111,15 @@ bring to the customer satisfaction and the bottom line of the company.
 
 
 ## Word networks
+
+To try to understand how the refunds are made based on the Tweets from Delta Assist, let's subset them to the ones containing the word `refund`.
+
+```{r subseting refunds}
+refund.tweets <- df[grep("refund", df$text, ignore.case = T), ]
+refund.corpus <- VCorpus(DataframeSource(refund.tweets))
+refund.corpus <- clean.corpus(refund.corpus)
+refund.tdm <- TermDocumentMatrix(refund.corpus)
+
+```
+
+There are `r nrow(refund.tweets)` tweets containing the word `refund`.

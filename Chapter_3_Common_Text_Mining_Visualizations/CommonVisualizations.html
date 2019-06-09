@@ -70,9 +70,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type="text/css">
 .main-container {
@@ -103,8 +101,6 @@ summary {
 </style>
 
 
-
-<div class="container-fluid main-container">
 
 <!-- tabsets -->
 
@@ -179,14 +175,23 @@ $(document).ready(function () {
 
 
 
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
 
 <div class="fluid-row" id="header">
 
 
 
 <h1 class="title toc-ignore">Common Text Mining Visualizations</h1>
-<h4 class="author"><em>P. Adames</em></h4>
-<h4 class="date"><em>June 3, 2019</em></h4>
+<h4 class="author">P. Adames</h4>
+<h4 class="date">June 3, 2019</h4>
 
 </div>
 
@@ -245,6 +250,12 @@ associations &lt;- associations[order(associations$terms,decreasing = T), ] # by
 </div>
 <div id="word-networks" class="section level2">
 <h2>Word networks</h2>
+<p>To try to understand how the refunds are made based on the Tweets from Delta Assist, let’s subset them to the ones containing the word <code>refund</code>.</p>
+<pre class="r"><code>refund.tweets &lt;- df[grep(&quot;refund&quot;, df$text, ignore.case = T), ]
+refund.corpus &lt;- VCorpus(DataframeSource(refund.tweets))
+refund.corpus &lt;- clean.corpus(refund.corpus)
+refund.tdm &lt;- TermDocumentMatrix(refund.corpus)</code></pre>
+<p>There are 7 tweets containing the word <code>refund</code>.</p>
 </div>
 
 
