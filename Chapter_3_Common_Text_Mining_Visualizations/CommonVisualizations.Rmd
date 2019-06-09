@@ -119,7 +119,32 @@ refund.tweets <- df[grep("refund", df$text, ignore.case = T), ]
 refund.corpus <- VCorpus(DataframeSource(refund.tweets))
 refund.corpus <- clean.corpus(refund.corpus)
 refund.tdm <- TermDocumentMatrix(refund.corpus)
-
 ```
 
 There are `r nrow(refund.tweets)` tweets containing the word `refund`.
+The previous code shows the creation of a new clean corpus and the term-document-matrix, these are necessary to build the visualization of the word network. 
+
+The next step is to build the adjacency matrix of terms with respect to the documents. This matrix represents the number of documents where the terms appear together with other terms. 
+
+```{r,  adjacency matrix, message=F}
+library(igraph)
+refund.matrix <- as.matrix(refund.tdm)
+refund.adj.matrix <- refund.matrix %*% t(refund.matrix) # %*% is the matrix multiplication operator
+refund.adj.matrix <- graph.adjacency(refund.adj.matrix, 
+                                     weighted = T, 
+                                     mode = "undirected", 
+                                     diag = T)
+refund.adj.matrix <- simplify(graph = refund.adj.matrix)
+```
+
+Now to plot the graph:
+
+```{r plot of word network}
+plot.igraph(refund.adj.matrix, 
+            vertex.shape = "none", 
+            vertex.label.font =  1,
+            vertex.label.color = "darkred",
+            vertex.label.cex = .5,
+            edge.color = "gray85")
+title(main = '@DeltaAssist Refund Word Network')
+```
