@@ -129,6 +129,10 @@ The next step is to build the adjacency matrix of terms with respect to the docu
 ```{r,  adjacency matrix, message=F}
 library(igraph)
 refund.matrix <- as.matrix(refund.tdm)
+refund.frequencies <- rowSums(refund.matrix)
+refund.matrix <- refund.matrix[order(refund.frequencies, decreasing = T), ]
+MAX_WORD_COUT <- 42
+refund.matrix <- refund.matrix[1:MAX_WORD_COUT, ]
 refund.adj.matrix <- refund.matrix %*% t(refund.matrix) # %*% is the matrix multiplication operator
 refund.adj.matrix <- graph.adjacency(refund.adj.matrix, 
                                      weighted = T, 
@@ -138,13 +142,23 @@ refund.adj.matrix <- simplify(graph = refund.adj.matrix)
 ```
 
 Now to plot the graph:
-
-```{r plot of word network}
+hey 
+```{r plot of word network, fig.width=8, fig.height=6}
 plot.igraph(refund.adj.matrix, 
             vertex.shape = "none", 
             vertex.label.font =  1,
             vertex.label.color = "darkred",
-            vertex.label.cex = .5,
+            vertex.label.cex = .7,
             edge.color = "gray85")
 title(main = '@DeltaAssist Refund Word Network')
 ```
+
+An easier approach is to use the library `qdap` as illustrated by the following snippet.
+
+```{r qdap word network, fig.width=8, fig.height=8}
+library(qdap)
+word_network_plot(refund.tweets$text[1:3])
+title(main = '@DeltaAssist Refund Word Network')
+```
+
+These word networks do provide some insight but are somewhat complicated to control to produce clear connections. Their use wit large bodies of text is cumbersome. They remain an exploratory tool to be used early on in text analysis but seldom used for final reporting.
