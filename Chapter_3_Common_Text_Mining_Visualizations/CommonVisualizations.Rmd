@@ -161,4 +161,55 @@ word_network_plot(refund.tweets$text[1:3])
 title(main = '@DeltaAssist Refund Word Network')
 ```
 
-These word networks do provide some insight but are somewhat complicated to control to produce clear connections. Their use wit large bodies of text is cumbersome. They remain an exploratory tool to be used early on in text analysis but seldom used for final reporting.
+The library `qpad` provides another way to generate word netwworks from the unfiltered data frame. Notice that al the clean up is done by the function itself.
+
+```{r more control through qdap, echo=T, message=F, warning=F, fig.height=8, fig.width=10}
+g <- word_associate(df$text,
+                    match.string = c('refund'),
+                    stopwords = Top200Words,
+                    network.plot = T,
+                    cloud.colors = c('gray85', 'darkred'))
+title(main = '@DeltaAssist Refund Word Network')
+```
+
+These word networks do provide some insight but in order to produce useful visualizations the data set has to be small and thus its power decreases. They remain an exploratory tool to be used early on in text analysis, together with other exploratory strategies, but seldom to be used for final reporting.
+
+
+# Simple word clusters: hierarchical dendograms
+
+These tree-like visualizations are a good early exploratory tool, also appropriate for small data sets.
+The author recommends around 50 terms per visualization.
+The technique involves calculating a distance matrix on the term document matrix, TDM, and using those distances between term vectors to be the criteria to start clustering terms. Starting with individual terms the algorithm starts pairing each term with its closest one until the main stem of the tree is reached.
+
+```{r dendogram}
+tdm_dense <- removeSparseTerms(x = tdm, sparse = 0.975) 
+
+```
+
+In order to avoid having to handle huge matrices, first a big proportion of the zeros in the TDM are removed via the `removeSparseTerms` function from the package `tm`. This leaves `r nrow(as.matrix(tdm_dense))` terms instead of the original `r nrow(as.matrix(tdm))`. The `sparse` argument indicates the maximum fraction of zeros to be removed from the term vectors, in this case up to 97.5% of the empty slots are removed in each vector.
+
+```{r hierarchical clustering creation}
+hc <- hclust(d = dist(tdm_dense,
+                      method = "euclidean"),
+             method = "complete")
+```
+Then the clustering object is created with the `hc` function that takes the distance matrix.
+
+```{r plotting the dendogram, fig.height=8, fig.width=10}
+plot(x = hc, 
+     yaxt = 'n', 
+     main = "@DeltaAssist Dendogram")
+```
+
+Finally the dendogram is plotted and an obvious cluster related to a flight confirmation request is very apparent. Other smaller clusters can be observed around apologies and delay, but in general it will be hard to infer something more than the very obvious clusters. The proximity of these terms to each other is determined by the distance metric used, so the author recommend experimenting with it.
+
+```{r hierarchical clustering creation different distance metric, fig.height=8, fig.width=10}
+hc2 <- hclust(d = dist(tdm_dense,
+                       method = "maximum"),
+              method = "complete")
+plot(x = hc2, 
+     yaxt = 'n', 
+     main = "@DeltaAssist Dendogram")
+```
+Using the maximum distance between term vectors yields cleaner clusters, assigning meaning to these groups may be a little more opaque. As with other exploratory approaches one has to keep looking for the unexpected.
+
