@@ -175,7 +175,7 @@ title(main = '@DeltaAssist Refund Word Network')
 These word networks do provide some insight but in order to produce useful visualizations the data set has to be small and thus its power decreases. They remain an exploratory tool to be used early on in text analysis, together with other exploratory strategies, but seldom to be used for final reporting.
 
 
-# Simple word clusters: hierarchical dendograms
+# Simple word clusters: hierarchical dendrograms
 
 These tree-like visualizations are a good early exploratory tool, also appropriate for small data sets.
 The author recommends around 50 terms per visualization.
@@ -195,10 +195,10 @@ hc <- hclust(d = dist(tdm_dense,
 ```
 Then the clustering object is created with the `hc` function that takes the distance matrix.
 
-```{r plotting the dendogram, fig.height=8, fig.width=10}
+```{r plotting the dendrogram, fig.height=8, fig.width=10}
 plot(x = hc, 
      yaxt = 'n', 
-     main = "@DeltaAssist Dendogram")
+     main = "@DeltaAssist Dendrogram")
 ```
 
 Finally the dendogram is plotted and an obvious cluster related to a flight confirmation request is very apparent. Other smaller clusters can be observed around apologies and delay, but in general it will be hard to infer something more than the very obvious clusters. The proximity of these terms to each other is determined by the distance metric used, so the author recommend experimenting with it.
@@ -209,7 +209,46 @@ hc2 <- hclust(d = dist(tdm_dense,
               method = "complete")
 plot(x = hc2, 
      yaxt = 'n', 
-     main = "@DeltaAssist Dendogram")
+     main = "@DeltaAssist Dendrogram")
 ```
 Using the maximum distance between term vectors yields cleaner clusters, assigning meaning to these groups may be a little more opaque. As with other exploratory approaches one has to keep looking for the unexpected.
+
+
+```{r circular dendrogram, message = F}
+library(dendextend)
+library(circlize)
+hcd <- as.dendrogram(hc) %>% 
+  color_labels(6, col = c('darkgrey', 'blue', '#bada55', 'darkgreen', 'red', "black")) %>%
+  color_branches(6, col = c('darkgrey', 'blue', '#bada55', 'darkgreen', 'red', "black"))
+circlize_dendrogram(hcd, labels_track_height = 0.5, dend_track_height = 0.4)
+```
+
+Using `dendextend` one assignes the number of clusters to the branches, via color assignment: from black, as the bottom most cluster, counter clock wise passing through red, green, light green, blue, and grey, as the top cluster.
+There is a big cluster, shown in green that makes the analysis rather non-conclusive.
+
+```{r circular dendrogram with maximum for distance, message = F}
+hcd2 <- as.dendrogram(hc2) %>% 
+  color_labels(6, col = c('darkgrey', 'blue', '#bada55', 'darkgreen', 'red', "black")) %>%
+  color_branches(6, col = c('darkgrey', 'blue', '#bada55', 'darkgreen', 'red', "black"))
+circlize_dendrogram(hcd2, labels_track_height = 0.5, dend_track_height = 0.4)
+```
+
+Using the dendogram created with the `maximum` as distance between term vectors, the distribution of cluster size gets worse as clearly seen in this visualization, with the cluster in black comprising the majority of the words.
+As witht the previous technique, it may be useful for exploration to acquaint oneself with the data but rather ineffective by itself to conclude anyhting of significance.
+
+```{r hierarchical clustering creation one more different distance metric, message = F}
+hc3 <- hclust(d = dist(tdm_dense,
+                       method = "canberra"),
+              method = "complete")
+hcd3 <- as.dendrogram(hc3) %>% 
+  color_labels(6, col = c('darkgrey', 'blue', '#bada55', 'darkgreen', 'red', "black")) %>%
+  color_branches(6, col = c('darkgrey', 'blue', '#bada55', 'darkgreen', 'red', "black"))
+circlize_dendrogram(hcd3, labels_track_height = 0.5, dend_track_height = 0.4)
+```
+
+The [`canberra`](https://en.wikipedia.org/wiki/Canberra_distance) distance does provide a few more clusters. Some of them can be used for interpreting perhaps related subjects: one about positive flight feedback in grey, another related to bagagge service in blue, and yet another one around instructions to a ticket number in light green color. Of course further confirmation of the meaning of these clusters should follow.
+
+
+# Word clouds
+
 
