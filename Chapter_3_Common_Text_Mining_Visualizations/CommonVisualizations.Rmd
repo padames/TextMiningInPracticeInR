@@ -312,11 +312,14 @@ tdm2.m[3480:3490,]
 
 Now lets add the color palette and create the visualization.
 
-```{r colour palette and word cloud, message=F, fig.dim=c(10,20)}
+```{r colour palette and word cloud, message=F, fig.dim=c(8,10)}
 library(RColorBrewer)
-display.brewer.all()
-pal <- brewer.pal(8, "Purples")
+display.brewer.all() # produces a very colourful display of the available palettes
+pal <- brewer.pal(8, "Purples") # choosing the palette of this name
 pal <- pal[-(1:4)] # removing the first four because they are too pale to be useful
+```
+
+```{r visualization word cloud comparisons two corpora, message=F}
 library(wordcloud)
 commonality.cloud(tdm2.m,
                   max.words = 200,
