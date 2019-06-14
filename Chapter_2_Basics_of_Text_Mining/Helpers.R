@@ -6,7 +6,7 @@ library(tm)
 
 tryTolower <- function(s) {
   s_lowered <- tryCatch( tolower(s),
-                         error = function(e) e )
+                         error = function(e) e ) # this is the only time `tolower` is called
   if (inherits(s_lowered, 'error')) {
     s_lowered <- NA
   }
@@ -26,3 +26,13 @@ clean.corpus <- function(corp) {
     tm_map(removeNumbers)
   return(corp)
 }
+
+
+clean.vec <- function(text.vec) {
+  return(text.vec %>% tryTolower() %>%
+    removeWords(custom.stopwords) %>%
+    removePunctuation() %>%
+    stripWhitespace() %>%
+    removeNumbers())
+}
+

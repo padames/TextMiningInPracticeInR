@@ -270,7 +270,49 @@ Takes a vector of terms and a vector of term frequecies.
 
 ```{r one corpus word cloud}
 library(wordcloud)
-terms <- attr(tdm.m, "dimnames")$Terms # the vector of terms stored in the list "dimnames" 
-wordcloud(words = frequencies.df$word, freq = frequencies.df$frequency, max.words = 100, colors = c('black','darkred'))
+wordcloud(words = frequencies.df$word, 
+          freq = frequencies.df$frequency, 
+          max.words = 100, 
+          min.freq = 20,  
+          colors = c('black','darkred'))
+```
+
+Notice the only dimension represented in this visualization is term frequency.
+The information displayed is the same one appearing in the table earlier in this document, however audiences usually consume this visualization much more readily. 
+
+## Comparing and contrasting corpora in word clouds
+
+In order to do this we need to import our second corpus:
+
+```{r second corpus for comparisons, message = F}
+# This url is my fork from the book author repo as of May 2019
+amazn <- read.csv(curl("https://raw.githubusercontent.com/padames/text_mining/master/amzn_cs.csv"),
+                  header = T, stringsAsFactors = F)
+delta <- text.df #previously read from the original repository in this same document
+
+# Override custom words based on previous work on the DeltaAssit corpus
+custom.stopwords = c(stopwords('en'), 'sorry', 'amp', 'delta', 'amazon')
+
+# Build the two text vectors to build the two corpora
+amazn.vec <- clean.vec(amazn$text)
+delta.vec <- clean.vec(delta$text) 
+
+# Each vector is collapsed into a single document representing all the terms from each domain
+amazn.vec <- paste(amazn.vec, collapse = " ")
+delta.vec <- paste(delta.vec, collapse = " ")
+
+# Build the new corpus with two corpora and its term-document-matrix (TDM)
+corpus2 <- VCorpus(VectorSource(c(amazn.vec,delta.vec)))
+tdm2 <- TermDocumentMatrix(corpus2)
+tdm2.m <- as.matrix(tdm2)
+colnames(tdm2.m) <- c("Amazon", "Delta") # capitalized to distinguish them from the actual terms
+# a sampler of the corpus
+tdm2.m[3480:3490,]
+```
+
+Now lets add the color palette and create the visualization.
+
+```{r colour palette and word cloud, message=F}
+library(RColorBrewer)
 ```
 
