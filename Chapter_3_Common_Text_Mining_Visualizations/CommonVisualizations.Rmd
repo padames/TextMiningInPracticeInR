@@ -45,7 +45,7 @@ corpus <- VCorpus(DataframeSource(df))
 corpus.clean <- clean.corpus(corpus)
 tdm <- TermDocumentMatrix(corpus.clean)
 tdm.m <- as.matrix(tdm)
-term.freq <- rowSums(tdm.m)
+term.freq <- rowSums(tdm.m) # the matrix stores the words in an attribute list called dimnames
 frequencies.df <- data.frame( word = names(term.freq), frequency = term.freq)
 frequencies.df <- frequencies.df[order(term.freq, decreasing = T), ]
 ```
@@ -251,4 +251,26 @@ The [`canberra`](https://en.wikipedia.org/wiki/Canberra_distance) distance does 
 
 # Word clouds
 
+These are visualizations based on word frequency as the main dimension represented by font size: the larger the font the more frequent it appears in the corpora.
+Other dimensions can be added by using colour and proximity to each other.
+Its wide adoption due to ease of interpretation has led to its excessive and sometimes arguably inadequate use. Special care must be taken in the selection of specific stop words durig preprocessing as this can introduce significant bias.
+
+The library `wordcloud` has three main functions: 
+
+ Function name           | Purpose
+ ------------------------|---------------------------------------------------------------------------
+ `wordcloud`             | Show the absolute frequency of words in one corpus of text
+ `commonality.cloud`     | Show the contrast of common word frequency among term vectors in two or more corpora
+ `comparison.cloud`      | Show the contrast between dissimilar words amog term vectors in two or more corpora
+ 
+ 
+## One corpus word clouds
+
+Takes a vector of terms and a vector of term frequecies.
+
+```{r one corpus word cloud}
+library(wordcloud)
+terms <- attr(tdm.m, "dimnames")$Terms # the vector of terms stored in the list "dimnames" 
+wordcloud(words = frequencies.df$word, freq = frequencies.df$frequency, max.words = 100, colors = c('black','darkred'))
+```
 
