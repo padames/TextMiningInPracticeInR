@@ -313,7 +313,7 @@ tdm2.m[3480:3490,]
 Now lets add the color palette and create the visualization.
 
 ```{r colour palette and word cloud, message=F, fig.dim=c(8,10)}
-library(RColorBrewer)
+library(RColorBrewer) # this is automatically loaded by the wordcloud package, here for illustration only
 display.brewer.all() # produces a very colourful display of the available palettes
 pal <- brewer.pal(8, "Purples") # choosing the palette of this name
 pal <- pal[-(1:4)] # removing the first four because they are too pale to be useful
@@ -328,4 +328,18 @@ commonality.cloud(tdm2.m,
 ```
 
 The visualization shows the words shared by the customer service teams from Amazon and Delta Airlines.
+
+In order to visualize a word cloud of the words that are not shared by the two corpora the function `comparison.cloud` requires two colors to show cotrast. These are taken from the ones available in the palette based on the number of columns in the TDM since, by convention, this data structure must have a column per corpora. Below the code to achieve this visualization.
+
+```{r unshared words between two corpora, message=FALSE, warning=FALSE}
+comparison.cloud(tdm2.m,
+                 max.words = 200,
+                 random.order = FALSE,
+                 title.size = 1.0,
+                 colors = brewer.pal(2, 
+                                     "Dark2"))
+```
+
+As exepcted the Amazon data refers to orders and deliveries while the Delta data concerns itself mostly with flights. This visualization quickly corroborates these assumptions.
+
 
