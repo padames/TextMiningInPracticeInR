@@ -13,14 +13,13 @@ tryTolower <- function(s) {
   return(s_lowered)
 }
 
-
-
-custom.stopwords <- c(stopwords("en"), 'lol', 'smh', 'delta')
+e <- new.env()
+e$custom.stopwords <- c(stopwords("en"), 'lol', 'smh', 'delta')
 
 clean.corpus <- function(corp) {
   corp <- corp %>%
     tm_map(content_transformer(tryTolower)) %>%
-    tm_map(removeWords, custom.stopwords) %>%
+    tm_map(removeWords, e$custom.stopwords) %>%
     tm_map(removePunctuation) %>%
     tm_map(stripWhitespace) %>%
     tm_map(removeNumbers)
@@ -28,9 +27,15 @@ clean.corpus <- function(corp) {
 }
 
 
-clean.vec <- function(text.vec) {
+e$clean.vec <- function(text.vec, stop_words = NULL) {
+  if (is.null(stop_words)) {
+    stopWords <- e$custom.stopwords # part of the binding environment
+  }
+  else {
+    stopWords <- stop_words
+  }
   return(text.vec %>% tryTolower() %>%
-    removeWords(custom.stopwords) %>%
+    removeWords(stopWords) %>%
     removePunctuation() %>%
     stripWhitespace() %>%
     removeNumbers())
