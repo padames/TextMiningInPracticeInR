@@ -251,7 +251,7 @@ The [`canberra`](https://en.wikipedia.org/wiki/Canberra_distance) distance does 
 
 # Word clouds
 
-These are visualizations based on word frequency as the main dimension represented by font size: the larger the font the more frequent it appears in the corpora.
+These are visualizations based on word frequency as the main dimension represented by font size: the larger the font the more frequent it appears in the corpus.
 Other dimensions can be added by using colour and proximity to each other.
 Its wide adoption due to ease of interpretation has led to its excessive and sometimes arguably inadequate use. Special care must be taken in the selection of specific stop words durig preprocessing as this can introduce significant bias.
 
@@ -261,7 +261,7 @@ The library `wordcloud` has three main functions:
  ------------------------|---------------------------------------------------------------------------
  `wordcloud`             | Show the absolute frequency of words in one corpus of text
  `commonality.cloud`     | Show the contrast of common word frequency among term vectors in two or more corpora
- `comparison.cloud`      | Show the contrast between dissimilar words amog term vectors in two or more corpora
+ `comparison.cloud`      | Show the contrast between dissimilar words among term vectors in two or more corpora
  
  
 ## One corpus word clouds
@@ -294,8 +294,8 @@ delta <- text.df #previously read from the original repository in this same docu
 custom.stopwords = c(stopwords('en'), 'sorry', 'amp', 'delta', 'amazon')
 
 # Build the two text vectors to build the two corpora
-amazn.vec <- clean.vec(amazn$text)
-delta.vec <- clean.vec(delta$text) 
+amazn.vec <- e$clean.vec(amazn$text, custom.stopwords)
+delta.vec <- e$clean.vec(delta$text, custom.stopwords) 
 
 # Each vector is collapsed into a single document representing all the terms from each domain
 amazn.vec <- paste(amazn.vec, collapse = " ")
@@ -342,4 +342,110 @@ comparison.cloud(tdm2.m,
 
 As exepcted the Amazon data refers to orders and deliveries while the Delta data concerns itself mostly with flights. This visualization quickly corroborates these assumptions.
 
+
+## Polarized tag plots
+
+This plot solves a problem with the visualization produced by the `commonality.cloud` function, namely, that a shared word appears without reference to its frequency in each cloud: it may appear once in one while it may appear 100 times in the other.
+
+Let's test the code that creates the pyramid plot where this new dimension can be contrasted for the common words appearing in two corpora, unfortunately the package `plotrix` limits the corpora to this number, unlike the `commonality.cloud`  function. The first step is cleaning up the common word matrix of all terms that appear zero times in any corpora.
+
+```{r plotrix pyramid plot foundation}
+library(plotrix) # install the package before knittig this document
+amzn_non_zero_terms <- tdm2.m[, 1] > 0
+delta_nonzero_terms <- tdm2.m[, 2] > 0
+all_nonzero_terms <- amzn_non_zero_terms & delta_nonzero_terms
+common.words <- subset(tdm2.m, all_nonzero_terms)
+tail(common.words)
+```
+
+This new matrix has all non-zero terms from both corpora. The original number of terms in `tdm2.m` was `r nrow(tdm2.m)` in comparison with the `r nrow(common.words)` terms of the `common.words` matrix after cleanup.
+
+The next step calculates the absolute difference in the number of times each common term appears in each corpus.
+
+```{r difference in term frequency between two corpora}
+difference <- abs(common.words[, 1] - common.words[, 2])
+```
+
+Then the difference vector is bound to the `common.words` matrix as a new column. The rows are then ordered according in decreasing absolute difference.
+
+```{r differences into the common.words matrix}
+common.words <- cbind(common.words, difference)
+common.words <- common.words[order(common.words[, 3],
+                                   decreasing = TRUE), ]
+```
+
+Now the data is reduced to the top 25 most frequent terms.
+
+```{r reducing terms for pyramid plot}
+top25.df <- data.frame(x = common.words[1:25, 1], 
+                       y = common.words[1:25, 2],
+                       labels = rownames(common.words[1:25, ]))
+```
+
+As the last step the visulaization is created. If the term is too long it may run into the actual plot on one side, if this happens then adjust the `gap` between horizontal columns.
+
+```{r plotrix visualization of common words with frequency built-in}
+g <- pyramid.plot(top25.df$x, 
+                  top25.df$y,
+                  labels = top25.df$labels,
+                  gap = 30,
+                  top.labels = c("Amazon", "Words", "Delta"),
+                  main = "Words in common",
+                  laxlab = NULL,
+                  raxlab = NULL,
+                  unit = NULL)
+```
+
+From this visualization one can see how the the Amazon data set definitely mentiones `order` and `delivery` while Delta hardily uses them. At the same time Delta uses `confirmation` and `assistance` and `apologies` significantly more often that Amazon even though they appear as common words.
+
+There is a substantial number of words that do not add information so consider adding them to the stop words for this analysis. Here is an example adding some more stop
+words and then visualizing how some common words are more heavily present in one data set than in the other. 
+
+```{r pyramid plot with more stop words, warning=F, message=F}
+# Override custom words based on previous work on the DeltaAssit corpus
+custom.stopwords <- c(stopwords('en'), 'sorry', 'amp', 'delta', 'amazon', 'let', 'help', 'provide', 'look', 'good', 'get', 'like', 'will' )
+
+# Build the two text vectors to build the two corpora
+amazn2.vec <- e$clean.vec(amazn$text, custom.stopwords)
+delta2.vec <- e$clean.vec(delta$text, custom.stopwords) 
+
+# Each vector is collapsed into a single document representing all the terms from each domain
+amazn2.vec <- paste(amazn2.vec, collapse = " ")
+delta2.vec <- paste(delta2.vec, collapse = " ")
+
+# Build the new corpus with two corpora and its term-document-matrix (TDM)
+corpus3 <- VCorpus(VectorSource(c(amazn2.vec,delta2.vec)))
+tdm3 <- TermDocumentMatrix(corpus3)
+tdm3.m <- as.matrix(tdm3)
+colnames(tdm3.m) <- c("Amazon", "Delta") # capitalized to distinguish them from the actual terms
+# a sampler of the corpus
+amzn_non_zero_terms2 <- tdm3.m[, 1] > 0
+delta_nonzero_terms2 <- tdm3.m[, 2] > 0
+all_nonzero_terms2 <- amzn_non_zero_terms2 & delta_nonzero_terms2
+common.words2 <- subset(tdm3.m, all_nonzero_terms2)
+difference2 <- abs(common.words2[, 1] - common.words2[, 2])
+common.words2 <- cbind(common.words2, difference2)
+common.words2 <- common.words2[order(common.words2[, 3],
+                                   decreasing = TRUE), ]
+top25_2.df <- data.frame(x = common.words2[1:25, 1], 
+                       y = common.words2[1:25, 2],
+                       labels = rownames(common.words2[1:25, ]))
+g2 <- pyramid.plot(top25_2.df$x,
+                   top25_2.df$y,
+                   labels = top25_2.df$labels,
+                   gap = 30,
+                   top.labels = c("Amazon", "Words", "Delta"),
+                   main = "Words in common, version 2",
+                   laxlab = NULL,
+                   raxlab = NULL,
+                   unit = NULL)
+
+```
+
+For example `assistance` and `apologies` are used by both groups but Delta uses them much more
+than Amazon. Other terms like `details`, `reach`, `date`, and `order` are also used by both
+groups but more so by the Amazon agents.
+
+The only terms used by both groups in similar high proportion are `hear`, `team`, and `thanks`. 
+In this example the information displayed is more of a confirmation than a discovery.
 
