@@ -80,6 +80,21 @@ Steps:
 
 # Polarity: Simple sentiment scoring
 
+Polarity is the positive or negative intent in the writer's tone. 
+Here we will use the polarity function in the `qdap` package to do a simple but surprisingly accurate assessment of this condition. The result can be customized to specific needs by adjusting the subjectivity lexicon.
+
+## Subjectivity lexicon
+
+This is a list of words associated with a particular emotional state. The `qdap` function uses a peer-reviewd subjectivity lexicon from Bing Liu at the University of Illinois, consisting of 6,800 labeled words. 
+
+A net polarity score can be calculated for a sentence by adding the positive or negative value of each word as per the subjectivity lexicon. The result is a negative, neutral, or positive tone for the excerpt. However this approach has to also consider amplifier and negaion words, so that an expression like "this is no good" results in a net negative value instead of neutral.
+
+The lexicon can be customized to include terms specific to the text under analysis, to account for regionalisms, manerisms, and so on.
+
+
+
+
+
 
 
 <!-- Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*. -->
