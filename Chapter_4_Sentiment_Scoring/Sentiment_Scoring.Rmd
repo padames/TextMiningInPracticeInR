@@ -89,11 +89,27 @@ This is a list of words associated with a particular emotional state. The `qdap`
 
 A net polarity score can be calculated for a sentence by adding the positive or negative value of each word as per the subjectivity lexicon. The result is a negative, neutral, or positive tone for the excerpt. However this approach has to also consider amplifier and negaion words, so that an expression like "this is no good" results in a net negative value instead of neutral.
 
-The lexicon can be customized to include terms specific to the text under analysis, to account for regionalisms, manerisms, and so on.
+The lexicon can be customized to include terms specific to the text under analysis, to account for regionalisms, mannerisms, and so on.
+
+Zipf's law states that a word will be used inversely proportional to its rank in the frequency list. That is, the number of times the fifth most frequent word will apear in a corpus with N terms will be approximately N/5.
+
+This is explained by the least effort exerted by humans when trying to convey meaning in spite of the size of their vocabulary. A complicated message will promote disengagement from the other part, so a well researched lexicon will capture those most commonly used words relatively easily.
 
 
+## `qdap` scoring for positive and negative word choice
 
+The function works by identifying cluster of words and scoring magnifiers with +0.8 and negations with -0.8. Negative and positive words receive -1 or +1 respectively.
+Additional Airbnb terms usually appearing in the comments must be added to the lexicon for more relevant results.
 
+```{r custom lexicon terms Airbnb}
+# vector of new additional positive terms
+new.pos <- c('rofl', 'lol') # rolling on the floor laughing and laugh out loud
+all.pos <- c(new.pos, positive.words) # original and new positive terms
+new.neg <- c('kappa','meh') # negative Airbnb terms for properties in Boston (from search)
+all.neg <- c(new.neg, negative.words)  # original and new negative terms
+all.polarity <- sentiment_frame(all.pos, all.neg)
+polarity('ROFL, look at that!', polarity.frame = all.polarity)
+```
 
 
 
