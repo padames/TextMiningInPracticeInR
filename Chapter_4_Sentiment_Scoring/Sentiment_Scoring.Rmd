@@ -1,0 +1,89 @@
+---
+title: "Sentiment Scoring"
+author: "P. Adames"
+date: "June 23, 2019"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Set Options
+options(stringsAsFactors = FALSE)
+Sys.setlocale('LC_ALL', 'C')
+
+library(stringi)
+library(stringr)
+library(qdap)
+library(curl)
+library(ggplot2)
+library(ggthemes)
+library(tm)
+
+source("../Chapter_2_Basics_of_Text_Mining/Helpers.R")
+``` 
+
+# What is sentiment analysis?
+
+From Chapter 4 of the book: `Sentiment analysis is the process of extracting an author's emotional intent from text`. This entails using liguistics, psychology and natural languaje processing.
+It is also a challenge to agree on the multiplicity of emotions and their cultural interpretation so there is always some degree of modelling/or analyst bias unless the specific intentions of the author are captured directly. Another reason for difficulty are contrasting sentiments on the same feature.
+
+Among the numerous emotional frameworks there is one we will use created by a psychologist by the name Robert Plutchik in the 80's. It consists of eight primary emotions supposed to be essential for the survival of men and animals. Each has a polar opposite and can be expressed with different levels of intensity. Besides this other emotions can be expressed as a blend of two or more of these basic eigth.
+
+## Basic emotions in Plutchik' emotion model
+
+In parenthesis the polar opposites:
+
+1. Anger (Joy)
+2. Fear (Anger)
+3. Sadness (Joy)
+4. Disgust (Trust)
+5. Surprise (Anticipation)
+6. Anticipation (Surprise)
+7. Trust (Disgust)
+8. Joy (Sadness)
+
+The complexity of using sentiment analysis becomes aparent considering that there
+are many other frameworks for defining emotions. The main sourc of ambiguity and bias comes
+from labeling a training set of n-grams and emotions from a particular sentiment framework.
+
+## Polarity
+
+It is simpler to analyse a text for sentiment polarity which in addition to identifying 
+a sentiment it states whether it is positive or negative.
+
+Three packages will be used in the exercises that follow:
+
+Package             |  Use
+--------------------|------------------------------------------------------------------
+`sentiment`         | Basic sentiment analysis
+`qdap`              | Polarity analysis
+`tidytext`          | Sentiment scoring
+
+
+
+# Sentiment Analysis: Parlor trick or insightful?
+
+The result of sentiment scoring must be complemented with domain knowledge to make it useful in a business case. Otherwise the risk is accurate sentiment descriptions that don't lead to actionable decisions to improve a product or service. Just stating that a result is positive or negative does not make it useful.
+
+
+_Example:_ Identify the positive and negative qualities of an Airbnb porperty in the Boston area.
+
+Steps:
+
+1. **Define problem and specific goal:** what property qualities are listed in positive/negative comments
+2. **Identify the text thah needs to be collected:** the comments left by users of properties
+3. **Organize text:** Select 1000 radom Airbnb listing in the Boston area. Clean and organize in a frequency matrix
+4. **Extract features:** Calculate sentiment and polarity scores
+5. **Analyze:** Subset the comments according to sentiment and polarity in order to analyze the terms used for positive and negative comments.
+6. **Make an insight or recommendation:**  Answering question formulated in step 1 will tell you if a property has the qualities considered positive in the Boston Area.
+
+
+# Polarity: Simple sentiment scoring
+
+
+
+<!-- Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*. -->
+
+<!-- When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file). -->
+
+<!-- The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed. -->
