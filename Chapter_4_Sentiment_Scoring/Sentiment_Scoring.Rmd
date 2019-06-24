@@ -101,7 +101,7 @@ This is explained by the least effort exerted by humans when trying to convey me
 The function works by identifying cluster of words and scoring magnifiers with +0.8 and negations with -0.8. Negative and positive words receive -1 or +1 respectively.
 Additional Airbnb terms usually appearing in the comments must be added to the lexicon for more relevant results.
 
-```{r custom lexicon terms Airbnb}
+```{r polarity using custom lexicon terms for Airbnb}
 # vector of new additional positive terms
 new.pos <- c('rofl', 'lol') # rolling on the floor laughing and laugh out loud
 all.pos <- c(new.pos, positive.words) # original and new positive terms
@@ -111,6 +111,27 @@ all.polarity <- sentiment_frame(all.pos, all.neg)
 polarity('ROFL, look at that!', polarity.frame = all.polarity)
 ```
 
+
+Compare this polarity with the one obtained using the standard lexicon:
+
+```{r polarity using standard lexicon}
+polarity('ROFL, look at that!')
+```
+
+This proves the need to include terms specific to the text under study.
+
+
+The same applies to the sentence `whatever you say, kappa`. Using the custom lexicon one gets a polarity result:
+
+```{r second example of polarity using custom lexicon}
+polarity('whatever you say, kappa', polarity.frame = all.polarity)
+```
+
+But using the standard lexicon:
+
+```{r second example of polarity using standard lexicon}
+polarity('whatever you say, kappa')
+```
 
 
 <!-- Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*. -->
