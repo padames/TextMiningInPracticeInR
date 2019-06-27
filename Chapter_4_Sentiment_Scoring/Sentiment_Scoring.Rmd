@@ -20,8 +20,6 @@ library(curl)
 library(ggplot2)
 library(ggthemes)
 library(tm)
-
-#source("../Chapter_2_Basics_of_Text_Mining/Helpers.R")
 ``` 
 
 # What is sentiment analysis?
@@ -153,7 +151,8 @@ bos.airbnb.comments <- bos.airbnb$comments # the vector of 1377 tweets
 bos.airbnb.comments %sw% qdapDictionaries::Top200Words  # infix version of 'rm_stopwords'
 bos.airbnb.comments <- mgsub("[^\x1F-\x7F]+", "", bos.airbnb.comments, fixed = FALSE) # remove all non-ascii charcaters (https://stackoverflow.com/a/28001656/1585486)
 bos.airbnb.comments <- strip(bos.airbnb.comments)
-#mgsub("[[:punct:]]", "PUNC", df$text, fixed = FALSE)
+bos.airbnb$comments_original <- bos.airbnb$comments # preserve original
+bos.airbnb$comments <- bos.airbnb.comments # clean comments
 bos.polarity <- polarity(bos.airbnb.comments) # a list with two members, one is a data frame called 'all', 
                                   # the polarities are in bos.polarity$all$polarity 
 ```
@@ -171,7 +170,38 @@ p <- ggplot(data = bos.polarity$all,
                  colour = "grey60",
                  size = .2) +
   geom_density(alpha = .25, fill = "white")
-print(p)
+p
 ```
 
-We see very few negative words and a peak in polarity around 0.8.
+We see very few negative words and a peak in polarity around `r round(mean(bos.polarity$all$polarity), digits = 2)`. On average every Airbnb review gets a positive word due to response bias in trying to conform to a social norm of *politeness*. This produces *grade inflation* of the positive words inserted in excess around the negative ones. In order to avoid this bias it is recommended to use the `scale` function that centers and scales the data around 0 using the mean as central reference and the standard deviation for scaling.
+
+```{r scaling polarity and its effects}
+# new column in original data frame:
+bos.airbnb$polarity <- scale(bos.polarity$all$polarity) 
+polarity_original <- summary(bos.polarity$all$polarity)
+polarity_scaled <- summary(as.vector(x = bos.airbnb$polarity))
+# table to compare before and after scaling and centering:
+round(cbind(polarity_original, polarity_scaled), 4) 
+```
+
+Now lets subset the comments according to polarity.
+
+```{r subsetting the comments by polarity}
+pos.comments <- bos.airbnb[bos.airbnb$polarity > 0, ]
+neg.comments <- bos.airbnb[bos.airbnb$polarity < 0, ]
+```
+
+```{r word cloud by polarity, message=F, warning=F, results="hide", echo=T}
+library(wordcloud)
+pos.terms <- paste( pos.comments, collapse = " ")
+neg.terms <- paste(neg.comments, collapse = " ")
+all.terms <- c(pos.terms, neg.terms)
+all.corpus <- VCorpus(VectorSource(all.terms))
+all.tdm <- TermDocumentMatrix(x = all.corpus, control = list(weighting = weightTfIdf,
+                                                             removePunctuation = TRUE,
+                                                             stopwords = stopwords(kind = 'en')))
+all.tdm.m <- as.matrix(all.tdm)
+colnames(all.tdm.m) <- c('positive', 'negative')
+comparison.cloud(all.tdm.m, max.words = 100, colors = c('darkgreen', 'darkred'))
+```
+
