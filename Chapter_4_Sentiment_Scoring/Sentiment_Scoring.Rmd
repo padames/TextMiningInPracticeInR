@@ -169,7 +169,14 @@ p <- ggplot(data = bos.polarity$all,
                  fill = "darkred", 
                  colour = "grey60",
                  size = .2) +
-  geom_density(alpha = .25, fill = "white")
+  geom_density(alpha = .25, fill = "white") +
+  geom_text(aes( x = 2.5, y = 0.5,
+                 label = paste(summary(as.data.frame(x = bos.polarity$all$polarity))[1], "\n",
+                               summary(as.data.frame(x = bos.polarity$all$polarity))[2], "\n",
+                               summary(as.data.frame(x = bos.polarity$all$polarity))[3], "\n",
+                               summary(as.data.frame(x = bos.polarity$all$polarity))[4], "\n",
+                               summary(as.data.frame(x = bos.polarity$all$polarity))[5], "\n",
+                               summary(as.data.frame(x = bos.polarity$all$polarity))[6], "\n")))
 p
 ```
 
@@ -181,7 +188,7 @@ bos.airbnb$polarity <- scale(bos.polarity$all$polarity)
 polarity_original <- summary(bos.polarity$all$polarity)
 polarity_scaled <- summary(as.vector(x = bos.airbnb$polarity))
 # table to compare before and after scaling and centering:
-round(cbind(polarity_original, polarity_scaled), 4) 
+round(cbind(polarity_original, polarity_scaled), 2) 
 ```
 
 Now lets subset the comments according to polarity.
