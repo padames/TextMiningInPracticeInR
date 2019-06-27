@@ -171,12 +171,12 @@ p <- ggplot(data = bos.polarity$all,
                  size = .2) +
   geom_density(alpha = .25, fill = "white") +
   geom_text(aes( x = 2.5, y = 0.5,
-                 label = paste(summary(as.data.frame(x = bos.polarity$all$polarity))[1], "\n",
-                               summary(as.data.frame(x = bos.polarity$all$polarity))[2], "\n",
-                               summary(as.data.frame(x = bos.polarity$all$polarity))[3], "\n",
-                               summary(as.data.frame(x = bos.polarity$all$polarity))[4], "\n",
-                               summary(as.data.frame(x = bos.polarity$all$polarity))[5], "\n",
-                               summary(as.data.frame(x = bos.polarity$all$polarity))[6], "\n")))
+                 label = paste(summary(as.data.frame(x = bos.polarity$all$polarity))[1], 
+                               summary(as.data.frame(x = bos.polarity$all$polarity))[2],
+                               summary(as.data.frame(x = bos.polarity$all$polarity))[3],
+                               summary(as.data.frame(x = bos.polarity$all$polarity))[4],
+                               summary(as.data.frame(x = bos.polarity$all$polarity))[5],
+                               summary(as.data.frame(x = bos.polarity$all$polarity))[6], sep = "\n")))
 p
 ```
 
