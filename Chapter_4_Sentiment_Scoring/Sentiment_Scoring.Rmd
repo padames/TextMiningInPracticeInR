@@ -2,7 +2,9 @@
 title: "Sentiment Scoring"
 author: "P. Adames"
 date: "June 23, 2019"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -19,7 +21,7 @@ library(ggplot2)
 library(ggthemes)
 library(tm)
 
-source("../Chapter_2_Basics_of_Text_Mining/Helpers.R")
+#source("../Chapter_2_Basics_of_Text_Mining/Helpers.R")
 ``` 
 
 # What is sentiment analysis?
@@ -72,7 +74,7 @@ Steps:
 
 1. **Define problem and specific goal:** what property qualities are listed in positive/negative comments
 2. **Identify the text thah needs to be collected:** the comments left by users of properties
-3. **Organize text:** Select 1000 radom Airbnb listing in the Boston area. Clean and organize in a frequency matrix
+3. **Organize text:** Select 1000 random Airbnb listing in the Boston area. Clean and organize in a frequency matrix
 4. **Extract features:** Calculate sentiment and polarity scores
 5. **Analyze:** Subset the comments according to sentiment and polarity in order to analyze the terms used for positive and negative comments.
 6. **Make an insight or recommendation:**  Answering question formulated in step 1 will tell you if a property has the qualities considered positive in the Boston Area.
@@ -133,9 +135,43 @@ But using the standard lexicon:
 polarity('whatever you say, kappa')
 ```
 
+## Revisiting word clouds - Sentiment word clouds
 
-<!-- Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*. -->
 
-<!-- When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file). -->
+Polarity analysis can be used to create two new corpora out of a single one and then study the terms that make positive or negative word clouds, as well as the terms that are neutral -the ones shared.
 
-<!-- The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed. -->
+The process consist of calculating the polarity of the documents in the corpus and then use this to subset it into the two new artificial corpora. These two sets are then used to produce the word cloud visualizations for union and intersection of terms. 
+
+```{r loading the data, message=F, warning=F, results="hide", echo=T}
+bos.airbnb <- read.csv(
+  curl("https://raw.githubusercontent.com/padames/text_mining/master/bos_airbnb_1k.csv"),
+  header = T, 
+  stringsAsFactors = F)
+# qdap assumes "Text contains only ASCII characters"" so a thorough cleanup is needed
+# Example of a document:"This place was very nice.<U+00A0> S<U+00E9>bastien was accommodating..."
+bos.airbnb.comments <- bos.airbnb$comments # the vector of 1377 tweets
+bos.airbnb.comments %sw% qdapDictionaries::Top200Words  # infix version of 'rm_stopwords'
+bos.airbnb.comments <- mgsub("[^\x1F-\x7F]+", "", bos.airbnb.comments, fixed = FALSE) # remove all non-ascii charcaters (https://stackoverflow.com/a/28001656/1585486)
+bos.airbnb.comments <- strip(bos.airbnb.comments)
+#mgsub("[[:punct:]]", "PUNC", df$text, fixed = FALSE)
+bos.polarity <- polarity(bos.airbnb.comments) # a list with two members, one is a data frame called 'all', 
+                                  # the polarities are in bos.polarity$all$polarity 
+```
+
+**Exploring the polarity data**
+
+First let's plot the polarity distribution.
+
+```{r polarity distribution, echo=TRUE}
+p <- ggplot(data = bos.polarity$all,
+            mapping = aes(x = polarity, ..density..)) +
+  theme_gdocs() +
+  geom_histogram(binwidth = .15,
+                 fill = "darkred", 
+                 colour = "grey60",
+                 size = .2) +
+  geom_density(alpha = .25, fill = "white")
+print(p)
+```
+
+We see very few negative words and a peak in polarity around 0.8.
