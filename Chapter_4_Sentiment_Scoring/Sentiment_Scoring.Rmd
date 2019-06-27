@@ -20,6 +20,13 @@ library(curl)
 library(ggplot2)
 library(ggthemes)
 library(tm)
+library(here)
+
+# Must have project rile at root directory
+setwd(here("Chapter_4_Sentiment_Scoring"))
+
+# helper functions
+source("../Chapter_2_Basics_of_Text_Mining/Helpers.R")
 ``` 
 
 # What is sentiment analysis?
@@ -147,14 +154,32 @@ bos.airbnb <- read.csv(
   stringsAsFactors = F)
 # qdap assumes "Text contains only ASCII characters"" so a thorough cleanup is needed
 # Example of a document:"This place was very nice.<U+00A0> S<U+00E9>bastien was accommodating..."
-bos.airbnb.comments <- bos.airbnb$comments # the vector of 1377 tweets
-bos.airbnb.comments %sw% qdapDictionaries::Top200Words  # infix version of 'rm_stopwords'
-bos.airbnb.comments <- mgsub("[^\x1F-\x7F]+", "", bos.airbnb.comments, fixed = FALSE) # remove all non-ascii charcaters (https://stackoverflow.com/a/28001656/1585486)
-bos.airbnb.comments <- strip(bos.airbnb.comments)
+```
+
+Now some data cleanup resusing our vectorized functions from Chapter 2 and a new function from `qdqp`
+to remove non-ASCII characters. Also some proper names that appeared very often were added
+to the stop words for removal.
+
+```{r data cleanup}
+custom.stopwords = c(stopwords('en'), 'alex', 'dallas', 'traci', 'danielle', 'gerald',
+                     'margaret', 'traci', 'aris', 'carol', 'raphael', 'jannah',
+                     'ryan', 'ana', 'dudleys', 'roseclair', 'savenors', 'endlittle', 
+                     'juliet', 'laura', 'saras', 'boudoir', 'changs', 'kayla', 
+                     'alexandra', 'owen', 'cherry', 'lily', 'harry', 'elena', 'pam')
+
 bos.airbnb$comments_original <- bos.airbnb$comments # preserve original
-bos.airbnb$comments <- bos.airbnb.comments # clean comments
-bos.polarity <- polarity(bos.airbnb.comments) # a list with two members, one is a data frame called 'all', 
-                                  # the polarities are in bos.polarity$all$polarity 
+ # remove all non-ascii, regex pattern from https://stackoverflow.com/a/28001656/1585486
+bos.airbnb$comments <- mgsub("[^\x1F-\x7F]+", "", bos.airbnb$comments, fixed = FALSE)
+# reuse our version of a vector clean up function from Chapter 2
+bos.airbnb$comments <- e$clean.vec(bos.airbnb$comments, custom.stopwords)
+bos.airbnb$comments <- strip(bos.airbnb$comments)
+```
+
+Now we can calulate the polarity list.
+
+```{r polarity}
+bos.polarity <- polarity(bos.airbnb$comments) # a list with two members, one is a data frame called 'all', 
+                                              # the polarities are in bos.polarity$all$polarity 
 ```
 
 **Exploring the polarity data**
@@ -183,7 +208,7 @@ p
 We see very few negative words and a peak in polarity around `r round(mean(bos.polarity$all$polarity), digits = 2)`. On average every Airbnb review gets a positive word due to response bias in trying to conform to a social norm of *politeness*. This produces *grade inflation* of the positive words inserted in excess around the negative ones. In order to avoid this bias it is recommended to use the `scale` function that centers and scales the data around 0 using the mean as central reference and the standard deviation for scaling.
 
 ```{r scaling polarity and its effects}
-# new column in original data frame:
+# create a new column in original data frame:
 bos.airbnb$polarity <- scale(bos.polarity$all$polarity) 
 polarity_original <- summary(bos.polarity$all$polarity)
 polarity_scaled <- summary(as.vector(x = bos.airbnb$polarity))
