@@ -205,3 +205,5 @@ colnames(all.tdm.m) <- c('positive', 'negative')
 comparison.cloud(all.tdm.m, max.words = 100, colors = c('darkgreen', 'darkred'))
 ```
 
+Based on the positive words, it is important to be close to interesting places, to have large beads, a gym, and to be a warm place, while the negatives have to do with terrible, disgusting, or not warm conditions in the property, also the word gates may give the impression that difficult access is detrimental.
+There are too many proper names, pointing to the need of better data clean up to remove them.
