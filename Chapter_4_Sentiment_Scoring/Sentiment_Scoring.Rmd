@@ -20,13 +20,13 @@ library(curl)
 library(ggplot2)
 library(ggthemes)
 library(tm)
-library(here)
+library(here) # read https://www.tidyverse.org/articles/2017/12/workflow-vs-script/
 
-# Must have project rile at root directory
+# package "here" assumes project file is in the root directory for relative paths to work
 setwd(here("Chapter_4_Sentiment_Scoring"))
 
 # helper functions
-source("../Chapter_2_Basics_of_Text_Mining/Helpers.R")
+source(here("Chapter_2_Basics_of_Text_Mining", "Helpers.R"))
 ``` 
 
 # What is sentiment analysis?
@@ -148,12 +148,16 @@ Polarity analysis can be used to create two new corpora out of a single one and 
 The process consist of calculating the polarity of the documents in the corpus and then use this to subset it into the two new artificial corpora. These two sets are then used to produce the word cloud visualizations for union and intersection of terms. 
 
 ```{r loading the data, message=F, warning=F, results="hide", echo=T}
-bos.airbnb <- read.csv(
-  curl("https://raw.githubusercontent.com/padames/text_mining/master/bos_airbnb_1k.csv"),
-  header = T, 
-  stringsAsFactors = F)
-# qdap assumes "Text contains only ASCII characters"" so a thorough cleanup is needed
-# Example of a document:"This place was very nice.<U+00A0> S<U+00E9>bastien was accommodating..."
+if (file.exists(here("Chapter_4_Sentiment_Scoring","bos_airbnb_1k.rds"))) {
+  bos.airbnb <- readRDS("bos_airbnb_1k.rds")
+} else
+{
+  bos.airbnb <- read.csv(
+    curl("https://raw.githubusercontent.com/padames/text_mining/master/bos_airbnb_1k.csv"),
+    header = T, 
+    stringsAsFactors = F)
+  saveRDS(bos.airbnb, here("Chapter_4_Sentiment_Scoring","bos_airbnb_1k.rds"))
+}
 ```
 
 Now some data cleanup resusing our vectorized functions from Chapter 2 and a new function from `qdqp`
@@ -161,14 +165,19 @@ to remove non-ASCII characters. Also some proper names that appeared very often 
 to the stop words for removal.
 
 ```{r data cleanup}
-custom.stopwords = c(stopwords('en'), 'alex', 'dallas', 'traci', 'danielle', 'gerald',
-                     'margaret', 'traci', 'aris', 'carol', 'raphael', 'jannah',
-                     'ryan', 'ana', 'dudleys', 'roseclair', 'savenors', 'endlittle', 
-                     'juliet', 'laura', 'saras', 'boudoir', 'changs', 'kayla', 
-                     'alexandra', 'owen', 'cherry', 'lily', 'harry', 'elena', 'pam')
+host.names <- bos.airbnb$host_name
+host.names <- mgsub("[^\x1F-\x7F]+", "", host.names, fixed = FALSE)
+host.names <- mgsub("[(aA)nd]+|&+|/+", "", host.names, fixed = FALSE)
+host.names <- host.names %>% 
+  str_split(pattern = " ") %>% 
+  unlist %>% 
+  tolower()
+custom.stopwords = c(stopwords('en'), host.names)
 
 bos.airbnb$comments_original <- bos.airbnb$comments # preserve original
- # remove all non-ascii, regex pattern from https://stackoverflow.com/a/28001656/1585486
+# qdap assumes "Text contains only ASCII characters"" so a thorough cleanup is needed
+# Example of a document:"This place was very nice.<U+00A0> S<U+00E9>bastien was accommodating..."
+# remove all non-ascii, regex pattern from https://stackoverflow.com/a/28001656/1585486
 bos.airbnb$comments <- mgsub("[^\x1F-\x7F]+", "", bos.airbnb$comments, fixed = FALSE)
 # reuse our version of a vector clean up function from Chapter 2
 bos.airbnb$comments <- e$clean.vec(bos.airbnb$comments, custom.stopwords)
@@ -178,8 +187,9 @@ bos.airbnb$comments <- strip(bos.airbnb$comments)
 Now we can calulate the polarity list.
 
 ```{r polarity}
-bos.polarity <- polarity(bos.airbnb$comments) # a list with two members, one is a data frame called 'all', 
+bos.airbnb$polarity <- polarity(bos.airbnb$comments) # a list with two members, one is a data frame called 'all', 
                                               # the polarities are in bos.polarity$all$polarity 
+bos.airbnb$polarities <- bos.airbnb$polarity$all$polarity
 ```
 
 **Exploring the polarity data**
@@ -187,8 +197,8 @@ bos.polarity <- polarity(bos.airbnb$comments) # a list with two members, one is 
 First let's plot the polarity distribution.
 
 ```{r polarity distribution, echo=TRUE}
-p <- ggplot(data = bos.polarity$all,
-            mapping = aes(x = polarity, ..density..)) +
+p <- ggplot(data = bos.airbnb,
+            mapping = aes(x = polarities, ..density..)) +
   theme_gdocs() +
   geom_histogram(binwidth = .15,
                  fill = "darkred", 
@@ -196,46 +206,45 @@ p <- ggplot(data = bos.polarity$all,
                  size = .2) +
   geom_density(alpha = .25, fill = "white") +
   geom_text(aes( x = 2.5, y = 0.5,
-                 label = paste(summary(as.data.frame(x = bos.polarity$all$polarity))[1], 
-                               summary(as.data.frame(x = bos.polarity$all$polarity))[2],
-                               summary(as.data.frame(x = bos.polarity$all$polarity))[3],
-                               summary(as.data.frame(x = bos.polarity$all$polarity))[4],
-                               summary(as.data.frame(x = bos.polarity$all$polarity))[5],
-                               summary(as.data.frame(x = bos.polarity$all$polarity))[6], sep = "\n")))
+                 label = paste(summary(as.data.frame(x = bos.airbnb$polarities))[1], 
+                               summary(as.data.frame(x = bos.airbnb$polarities))[2],
+                               summary(as.data.frame(x = bos.airbnb$polarities))[3],
+                               summary(as.data.frame(x = bos.airbnb$polarities))[4],
+                               summary(as.data.frame(x = bos.airbnb$polarities))[5],
+                               summary(as.data.frame(x = bos.airbnb$polarities))[6], sep = "\n")))
 p
 ```
 
-We see very few negative words and a peak in polarity around `r round(mean(bos.polarity$all$polarity), digits = 2)`. On average every Airbnb review gets a positive word due to response bias in trying to conform to a social norm of *politeness*. This produces *grade inflation* of the positive words inserted in excess around the negative ones. In order to avoid this bias it is recommended to use the `scale` function that centers and scales the data around 0 using the mean as central reference and the standard deviation for scaling.
+We see very few negative words and a peak in polarity around `r round(mean(bos.airbnb$polarities), digits = 2)`. On average every Airbnb review gets a positive word due to response bias in trying to conform to a social norm of *politeness*. This produces *grade inflation* of the positive words inserted in excess around the negative ones. In order to avoid this bias it is recommended to use the `scale` function that centers and scales the data around 0 using the mean as central reference and the standard deviation for scaling.
 
 ```{r scaling polarity and its effects}
 # create a new column in original data frame:
-bos.airbnb$polarity <- scale(bos.polarity$all$polarity) 
-polarity_original <- summary(bos.polarity$all$polarity)
-polarity_scaled <- summary(as.vector(x = bos.airbnb$polarity))
+polarities_original <- summary(as.vector(bos.airbnb$polarities))
+bos.airbnb$polarities <- scale(bos.airbnb$polarities) 
+polarities_scaled <- summary(as.vector(x = bos.airbnb$polarities))
 # table to compare before and after scaling and centering:
-round(cbind(polarity_original, polarity_scaled), 2) 
+round(cbind(polarities_original, polarities_scaled), 2) 
 ```
 
 Now lets subset the comments according to polarity.
 
 ```{r subsetting the comments by polarity}
-pos.comments <- bos.airbnb[bos.airbnb$polarity > 0, ]
-neg.comments <- bos.airbnb[bos.airbnb$polarity < 0, ]
+pos.comments <- bos.airbnb[bos.airbnb$polarities > 0, "comments"]
+neg.comments <- bos.airbnb[bos.airbnb$polarities < 0, "comments"]
 ```
 
 ```{r word cloud by polarity, message=F, warning=F, results="hide", echo=T}
 library(wordcloud)
-pos.terms <- paste( pos.comments, collapse = " ")
+pos.terms <- paste(pos.comments, collapse = " ")
 neg.terms <- paste(neg.comments, collapse = " ")
 all.terms <- c(pos.terms, neg.terms)
 all.corpus <- VCorpus(VectorSource(all.terms))
+# read the book to get an explanation of what the TFIDF matrix is
 all.tdm <- TermDocumentMatrix(x = all.corpus, control = list(weighting = weightTfIdf,
                                                              removePunctuation = TRUE,
-                                                             stopwords = stopwords(kind = 'en')))
+                                                             stopwords = custom.stopwords))
 all.tdm.m <- as.matrix(all.tdm)
 colnames(all.tdm.m) <- c('positive', 'negative')
 comparison.cloud(all.tdm.m, max.words = 100, colors = c('darkgreen', 'darkred'))
 ```
 
-Based on the positive words, it is important to be close to interesting places, to have large beads, a gym, and to be a warm place, while the negatives have to do with terrible, disgusting, or not warm conditions in the property, also the word gates may give the impression that difficult access is detrimental.
-There are too many proper names, pointing to the need of better data clean up to remove them.
