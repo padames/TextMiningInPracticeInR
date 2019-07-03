@@ -248,6 +248,52 @@ colnames(all.tdm.m) <- c('positive', 'negative')
 comparison.cloud(all.tdm.m, max.words = 100, colors = c('darkgreen', 'darkred'))
 ```
 
-The positive wors seem related to snacks, luxury features (?), good value, and a feel of
+The positive wors seem related to snacks, maybe the ability to take public transit
+close to the property, luxury features(?), good value, and a feel of
 home. The negative seem related to cancelations from the property owner (?), lack of cleaningless,
 and maybe the lack of elevators.
+
+
+**Without scaling and using the TFIDF weighted TDM**
+
+The results vary, first using the scaling of the polarities but not the special weighting
+for common words that may appear in most of the documents.
+
+```{r word cloud by polarity with scaling and TFIDF weighted TDM, message=F, warning=F,echo=T}
+all.tdm.simple <- TermDocumentMatrix(x = all.corpus, control = list(weighting = weightTf,
+                                                                    removePunctuation = TRUE,
+                                                                    stopwords = custom.stopwords))
+all.tdm.simple.m <- as.matrix(all.tdm.simple)
+colnames(all.tdm.simple.m) <- c('positive', 'negative')
+comparison.cloud(all.tdm.simple.m, max.words = 100, colors = c('darkgreen', 'darkred'))
+```
+
+One can see that words like `boston` score high with the simple TF-weighed TDM matrix. 
+However the terms that show up seem to reinforce the positives as related to comfortable,
+beautiful, quiet, safe, clean, spacious properties with friendly (welcoming?) hosts, 
+useful and welcoming features, and good access.
+
+The negatives seem related to property small size, lack of cleaningless, 
+inconvenient location (far from transit perhaps?), noisy surroundings or appliances(?),
+property access not simple (?) and problems with the reservation.
+
+The results not scaling the polarity vector and using the simple TF-weighed TDM.
+
+```{r word cloud by polarity without scaling and TFIDF weighted TDM, message=F, warning=F,echo=T}
+pos.comments.simple <- bos.airbnb[bos.airbnb$polarity$all$polarity > 0, "comments"]
+neg.comments.simple <- bos.airbnb[bos.airbnb$polarity$all$polarity < 0, "comments"]
+
+pos.terms.simple <- paste(pos.comments.simple, collapse = " ")
+neg.terms.simple <- paste(neg.comments.simple, collapse = " ")
+all.terms.simple <- c(pos.terms.simple, neg.terms.simple)
+all.corpus.simple <- VCorpus(VectorSource(all.terms.simple))
+
+
+all.tdm.simple2 <- TermDocumentMatrix(x = all.corpus.simple, 
+                                     control = list(weighting = weightTf,
+                                                    removePunctuation = TRUE,
+                                                    stopwords = custom.stopwords))
+all.tdm.simple.m2 <- as.matrix(all.tdm.simple2)
+colnames(all.tdm.simple.m2) <- c('positive', 'negative')
+comparison.cloud(all.tdm.simple.m2, max.words = 100, colors = c('darkgreen', 'darkred'))
+```
