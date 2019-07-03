@@ -205,7 +205,7 @@ p <- ggplot(data = bos.airbnb,
                  colour = "grey60",
                  size = .2) +
   geom_density(alpha = .25, fill = "white") +
-  geom_text(aes( x = 2.5, y = 0.5,
+  geom_text(aes( x = 2.75, y = 0.5,
                  label = paste(summary(as.data.frame(x = bos.airbnb$polarities))[1], 
                                summary(as.data.frame(x = bos.airbnb$polarities))[2],
                                summary(as.data.frame(x = bos.airbnb$polarities))[3],
@@ -248,3 +248,6 @@ colnames(all.tdm.m) <- c('positive', 'negative')
 comparison.cloud(all.tdm.m, max.words = 100, colors = c('darkgreen', 'darkred'))
 ```
 
+The positive wors seem related to snacks, luxury features (?), good value, and a feel of
+home. The negative seem related to cancelations from the property owner (?), lack of cleaningless,
+and maybe the lack of elevators.
