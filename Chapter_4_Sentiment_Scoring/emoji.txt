@@ -1,0 +1,134 @@
+1	U+1F600	grinning face
+2	U+1F603	grinning face with big eyes
+3	U+1F604	grinning face with smiling eyes
+4	U+1F601	beaming face with smiling eyes
+5	U+1F606	grinning squinting face
+6	U+1F605	grinning face with sweat
+7	U+1F923	rolling on the floor laughing
+8	U+1F602	face with tears of joy
+9	U+1F642	slightly smiling face
+10	U+1F643	upside-down face
+11	U+1F609	winking face
+12	U+1F60A	smiling face with smiling eyes
+13	U+1F607	smiling face with halo
+14	U+1F970	smiling face with hearts
+15	U+1F60D	smiling face with heart-eyes
+16	U+1F929	star-struck
+17	U+1F618	face blowing a kiss
+18	U+1F617	kissing face
+19	U+263A	smiling face
+20	U+1F61A	kissing face with closed eyes
+21	U+1F619	kissing face with smiling eyes
+22	U+1F60B	face savoring food
+23	U+1F61B	face with tongue
+24	U+1F61C	winking face with tongue
+25	U+1F92A	zany face
+26	U+1F61D	squinting face with tongue
+27	U+1F911	money-mouth face
+28	U+1F917	hugging face
+29	U+1F92D	face with hand over mouth
+30	U+1F92B	shushing face
+31	U+1F914	thinking face
+32	U+1F910	zipper-mouth face
+33	U+1F928	face with raised eyebrow
+34	U+1F610	neutral face
+35	U+1F611	expressionless face
+36	U+1F636	face without mouth
+37	U+1F60F	smirking face
+38	U+1F612	unamused face
+39	U+1F644	face with rolling eyes
+40	U+1F62C	grimacing face
+41	U+1F925	lying face
+42	U+1F60C	relieved face
+43	U+1F614	pensive face
+44	U+1F62A	sleepy face
+45	U+1F924	drooling face
+46	U+1F634	sleeping face
+47	U+1F637	face with medical mask
+48	U+1F912	face with thermometer
+49	U+1F915	face with head-bandage
+50	U+1F922	nauseated face
+51	U+1F92E	face vomiting
+52	U+1F927	sneezing face
+53	U+1F975	hot face
+54	U+1F976	cold face
+55	U+1F974	woozy face
+56	U+1F635	dizzy face
+57	U+1F92F	exploding head
+58	U+1F920	cowboy hat face
+59	U+1F973	partying face
+60	U+1F60E	smiling face with sunglasses
+61	U+1F913	nerd face
+62	U+1F9D0	face with monocle
+63	U+1F615	confused face
+64	U+1F61F	worried face
+65	U+1F641	slightly frowning face
+66	U+2639	frowning face
+67	U+1F62E	face with open mouth
+68	U+1F62F	hushed face
+69	U+1F632	astonished face
+70	U+1F633	flushed face
+71	U+1F97A	pleading face
+72	U+1F626	frowning face with open mouth
+73	U+1F627	anguished face
+74	U+1F628	fearful face
+75	U+1F630	anxious face with sweat
+76	U+1F625	sad but relieved face
+77	U+1F622	crying face
+78	U+1F62D	loudly crying face
+79	U+1F631	face screaming in fear
+80	U+1F616	confounded face
+81	U+1F623	persevering face
+82	U+1F61E	disappointed face
+83	U+1F613	downcast face with sweat
+84	U+1F629	weary face
+85	U+1F62B	tired face
+86	U+1F971	⊛ yawning face
+87	U+1F624	face with steam from nose
+88	U+1F621	pouting face
+89	U+1F620	angry face
+90	U+1F92C	face with symbols on mouth
+91	U+1F608	smiling face with horns
+92	U+1F47F	angry face with horns
+93	U+1F480	skull
+94	U+2620	skull and crossbones
+95	U+1F4A9	pile of poo
+96	U+1F921	clown face
+97	U+1F479	ogre
+98	U+1F47A	goblin
+99	U+1F47B	ghost
+100	U+1F47D	alien
+101	U+1F47E	alien monster
+102	U+1F916	robot
+103	U+1F63A	grinning cat
+104	U+1F638	grinning cat with smiling eyes
+105	U+1F639	cat with tears of joy
+106	U+1F63B	smiling cat with heart-eyes
+107	U+1F63C	cat with wry smile
+108	U+1F63D	kissing cat
+109	U+1F640	weary cat
+110	U+1F63F	crying cat
+111	U+1F63E	pouting cat
+112	U+1F648	see-no-evil monkey
+113	U+1F649	hear-no-evil monkey
+114	U+1F64A	speak-no-evil monkey
+115	U+1F48B	kiss mark
+116	U+1F48C	love letter
+117	U+1F498	heart with arrow
+118	U+1F49D	heart with ribbon
+119	U+1F496	sparkling heart
+120	U+1F497	growing heart
+121	U+1F493	beating heart
+122	U+1F49E	revolving hearts
+123	U+1F495	two hearts
+124	U+1F49F	heart decoration
+125	U+2763	heart exclamation
+126	U+1F494	broken heart
+127	U+2764	red heart
+128	U+1F9E1	orange heart
+129	U+1F49B	yellow heart
+130	U+1F49A	green heart
+131	U+1F499	blue heart
+132	U+1F49C	purple heart
+133	U+1F90E	⊛ brown heart
+134	U+1F5A4	black heart
