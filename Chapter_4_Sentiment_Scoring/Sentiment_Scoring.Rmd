@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 options(stringsAsFactors = FALSE)
 Sys.setlocale('LC_ALL', 'C')
 
+library(dplyr)
 library(stringi)
 library(stringr)
 library(qdap)
@@ -20,6 +21,7 @@ library(curl)
 library(ggplot2)
 library(ggthemes)
 library(tm)
+library(Unicode)
 library(here) # read https://www.tidyverse.org/articles/2017/12/workflow-vs-script/
 
 # package "here" assumes project file is in the root directory for relative paths to work
@@ -179,6 +181,7 @@ bos.airbnb$comments_original <- bos.airbnb$comments # preserve original
 # Example of a document:"This place was very nice.<U+00A0> S<U+00E9>bastien was accommodating..."
 # remove all non-ascii, regex pattern from https://stackoverflow.com/a/28001656/1585486
 bos.airbnb$comments <- mgsub("[^\x1F-\x7F]+", "", bos.airbnb$comments, fixed = FALSE)
+bos.airbnb$comments_ascii <- bos.airbnb$comments
 # reuse our version of a vector clean up function from Chapter 2
 bos.airbnb$comments <- e$clean.vec(bos.airbnb$comments, custom.stopwords)
 bos.airbnb$comments <- strip(bos.airbnb$comments)
@@ -187,9 +190,8 @@ bos.airbnb$comments <- strip(bos.airbnb$comments)
 Now we can calulate the polarity list.
 
 ```{r polarity}
-bos.airbnb$polarity <- polarity(bos.airbnb$comments) # a list with two members, one is a data frame called 'all', 
+bos.pol <- polarity(bos.airbnb$comments) # a list with two members, one is a data frame called 'all', 
                                               # the polarities are in bos.polarity$all$polarity 
-bos.airbnb$polarities <- bos.airbnb$polarity$all$polarity
 ```
 
 **Exploring the polarity data**
@@ -197,8 +199,8 @@ bos.airbnb$polarities <- bos.airbnb$polarity$all$polarity
 First let's plot the polarity distribution.
 
 ```{r polarity distribution, echo=TRUE}
-p <- ggplot(data = bos.airbnb,
-            mapping = aes(x = polarities, ..density..)) +
+p <- ggplot(data = bos.pol$all,
+            mapping = aes(x = polarity, ..density..)) +
   theme_gdocs() +
   geom_histogram(binwidth = .15,
                  fill = "darkred", 
@@ -206,12 +208,12 @@ p <- ggplot(data = bos.airbnb,
                  size = .2) +
   geom_density(alpha = .25, fill = "white") +
   geom_text(aes( x = 2.75, y = 0.5,
-                 label = paste(summary(as.data.frame(x = bos.airbnb$polarities))[1], 
-                               summary(as.data.frame(x = bos.airbnb$polarities))[2],
-                               summary(as.data.frame(x = bos.airbnb$polarities))[3],
-                               summary(as.data.frame(x = bos.airbnb$polarities))[4],
-                               summary(as.data.frame(x = bos.airbnb$polarities))[5],
-                               summary(as.data.frame(x = bos.airbnb$polarities))[6], sep = "\n")))
+                 label = paste(summary(as.data.frame(x = bos.pol$all$polarity))[1], 
+                               summary(as.data.frame(x = bos.pol$all$polarity))[2],
+                               summary(as.data.frame(x = bos.pol$all$polarity))[3],
+                               summary(as.data.frame(x = bos.pol$all$polarity))[4],
+                               summary(as.data.frame(x = bos.pol$all$polarity))[5],
+                               summary(as.data.frame(x = bos.pol$all$polarity))[6], sep = "\n")))
 p
 ```
 
@@ -219,9 +221,9 @@ We see very few negative words and a peak in polarity around `r round(mean(bos.a
 
 ```{r scaling polarity and its effects}
 # create a new column in original data frame:
-polarities_original <- summary(as.vector(bos.airbnb$polarities))
-bos.airbnb$polarities <- scale(bos.airbnb$polarities) 
-polarities_scaled <- summary(as.vector(x = bos.airbnb$polarities))
+polarities_original <- summary(as.vector(bos.pol$all$polarity))
+bos.pol$all$polarity <- scale(bos.pol$all$polarity) 
+polarities_scaled <- summary(as.vector(x = bos.pol$all$polarity))
 # table to compare before and after scaling and centering:
 round(cbind(polarities_original, polarities_scaled), 2) 
 ```
@@ -229,8 +231,8 @@ round(cbind(polarities_original, polarities_scaled), 2)
 Now lets subset the comments according to polarity.
 
 ```{r subsetting the comments by polarity}
-pos.comments <- bos.airbnb[bos.airbnb$polarities > 0, "comments"]
-neg.comments <- bos.airbnb[bos.airbnb$polarities < 0, "comments"]
+pos.comments <- bos.airbnb[bos.pol$all$polarity > 0, "comments"]
+neg.comments <- bos.airbnb[bos.pol$all$polarity < 0, "comments"]
 ```
 
 ```{r word cloud by polarity, message=F, warning=F, results="hide", echo=T}
@@ -280,8 +282,8 @@ property access not simple (?) and problems with the reservation.
 The results not scaling the polarity vector and using the simple TF-weighed TDM.
 
 ```{r word cloud by polarity without scaling and TFIDF weighted TDM, message=F, warning=F,echo=T}
-pos.comments.simple <- bos.airbnb[bos.airbnb$polarity$all$polarity > 0, "comments"]
-neg.comments.simple <- bos.airbnb[bos.airbnb$polarity$all$polarity < 0, "comments"]
+pos.comments.simple <- bos.airbnb[bos.pol$all$polarity > 0, "comments"]
+neg.comments.simple <- bos.airbnb[bos.pol$all$polarity < 0, "comments"]
 
 pos.terms.simple <- paste(pos.comments.simple, collapse = " ")
 neg.terms.simple <- paste(neg.comments.simple, collapse = " ")
@@ -297,3 +299,81 @@ all.tdm.simple.m2 <- as.matrix(all.tdm.simple2)
 colnames(all.tdm.simple.m2) <- c('positive', 'negative')
 comparison.cloud(all.tdm.simple.m2, max.words = 100, colors = c('darkgreen', 'darkred'))
 ```
+
+## Emoticons 
+
+When using corpora from public social media chats or messege apps, an importan part of the
+emotional content of the text comes sprinkled with emoticons and emojis. If one wants to add
+their meaning into the sentiment analysis stream their identification and conversion into  
+words and text is useful and even necessary.
+
+The Airbnb reviews are an example of this.
+There are as a minimum `r sum(stri_detect(str = bos.airbnb$comments_original, regex = ":-\\)|:>|:<|:-D|:\\(|;\\)|:\\)"))` punctuation-based emoticons and some
+`r sum(stri_detect(str = bos.airbnb$comments_original,regex = "[^\x1F-\x7F]+"))` 
+emojis in the original Airbnb reviews.
+
+The first set of emoticons that need to be identified and transformed are the UTF-8 based ones
+because their presence triggers errors like: **string 127 is invalid UTF-8** from many R functions.
+Let's identify, isolate, convert to text and replace the emojis first and once they are transformed
+into English words, we can proceed to identify and trnsform the punctuation-based emoticons.
+
+First we load the file with the UTF-8 emoticon definitions and their corresponding R byte econding.
+This information was found in https://raw.githubusercontent.com/today-is-a-good-day/emojis/master/emojis.csv.
+The file was downloaded and a copy committed to this repo for redundancy. 
+
+```{r loading emoji definition and encodings file}
+if (file.exists(here("Chapter_4_Sentiment_Scoring","emoji.txt"))) {
+  emoji_raw_df <- read.table(here("Chapter_4_Sentiment_Scoring", "emoji.txt"),
+                             header = T, 
+                             sep = ";")  %>%
+  select(EN, tag, ftu8, unicode) %>% 
+  rename(description = EN, r.encoding = ftu8)
+} else {
+  emoji_raw_df <- read.csv2(curl("https://raw.githubusercontent.com/today-is-a-good-day/emojis/master/emojis.csv")) %>%
+  select(EN, tag, ftu8, unicode) %>% 
+  rename(description = EN, r.encoding = ftu8)
+}
+# plain skin tones
+skin_tones <- c("light skin tone", 
+                "medium-light skin tone", 
+                "medium skin tone",
+                "medium-dark skin tone", 
+                "dark skin tone")
+
+# remove plain skin tones and remove skin tone info in description
+emoji_df <- emoji_raw_df %>%
+  # remove plain skin tones emojis
+  filter(!description %in% skin_tones) %>%
+  # remove emojis with skin tones info, e.g. remove woman: light skin tone and only keep woman
+  filter(!grepl(":", description)) %>%
+  mutate(description = tolower(description)) %>%
+  mutate(unicode = as.u_char(unicode))
+# all emojis with more than one unicode codepoint become NA 
+```
+
+The resulting data frame `emoji_df` has a column named `ftu8` that was renamed `r.encoding` following the 
+book author preference. The important part is that the file contains the R byte encoding of each emoji.
+The `tag` column has more descriptive words that may be used as a text replacement alternative, 
+this can be compared to using the `EN` column which was renamed `description`, it has the standard English 
+language description of the emoji.
+
+The workflow involves converting the UTF-8 encoding of the emois to **R byte enconding**, then
+transalate the R-byte into plain English text to be used in sentiment analysis. This is accomplished in the following block of R code.
+
+```{r converting emoji current text representation in UTF-8 block encoding to standard UTF-8}
+bos.airbnb$comments_utf8 <- iconv(bos.airbnb$comments_original, from = "ascii", to = "utf8", sub = "byte")
+```
+
+```{r substituting emojis with text}
+bos.airbnb$comments_enhanced <- mgsub(pattern = emoji_df$ftu8, 
+                                       replacement = emoji_df$tag, 
+                                       bos.airbnb$comments_utf8)
+```
+
+
+```{r punctuation-based emoticons}
+bos.airbnb$comments_enhanced2 <- mgsub(pattern = emoticon[,2], 
+                                       replacement = emoticon[,1], 
+                                       bos.airbnb$comments_ascii)
+```
+
