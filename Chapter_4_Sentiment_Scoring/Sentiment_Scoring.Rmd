@@ -357,12 +357,38 @@ The `tag` column has more descriptive words that may be used as a text replaceme
 this can be compared to using the `EN` column which was renamed `description`, it has the standard English 
 language description of the emoji.
 
-The workflow involves converting the UTF-8 encoding of the emois to **R byte enconding**, then
-transalate the R-byte into plain English text to be used in sentiment analysis. This is accomplished in the following block of R code.
+The workflow involves first converting the punctuation-based emoticons to their equivalent English words
+via `qdap`'s `mgsub` and the built-in dictionary named `emoticon`. However since applyig the `mgsub` fuction
+to the vector of original comments threw the error:
+
+```
+> mgsub(pattern = emoticon[,2], replacement = emoticon[,1], bos.airbnb$comments_original)
+
+Error in gsub(pattern[i], replacement[i], text.var, fixed = fixed, ...) : 
+input string 127 is invalid UTF-8
+```
+A work around the first `ivalid UTF-8` error found in comment number 127 is
+to turn all no-conformant UTF-8 Unicode codes into byte code.
+This coversion does not affect valid UTF-8 entries that were processed by `mgsub` without throwing errors.
+
+```{r punctuation-based emoticons, eval=TRUE, include=TRUE}
+bos.airbnb$comments_original_to_byte <- iconv(bos.airbnb$comments_original, 
+                                              from = "UTF-8", 
+                                              to = "UTF-8", 
+                                              sub = "byte")
+bos.airbnb$comments_enhanced <- mgsub(pattern = emoticon[,2], 
+                                       replacement = emoticon[,1], 
+                                       bos.airbnb$comments_original_to_byte)
+```
+
+Then the UTF-8 encoding of the emojis can be converted to **R byte enconding**:
 
 ```{r converting emoji current text representation in UTF-8 block encoding to standard UTF-8}
-bos.airbnb$comments_utf8 <- iconv(bos.airbnb$comments_original, from = "ascii", to = "utf8", sub = "byte")
+bos.airbnb$comments_utf8 <- iconv(bos.airbnb$comments_original, from = "utf8", to = "utf8", sub = "byte")
 ```
+
+Followed now by translating the R-byte found in the comments into English words that describe their meaning.
+This is accomplished in the following block of R code:
 
 ```{r substituting emojis with text}
 bos.airbnb$comments_enhanced <- mgsub(pattern = emoji_df$ftu8, 
@@ -370,10 +396,9 @@ bos.airbnb$comments_enhanced <- mgsub(pattern = emoji_df$ftu8,
                                        bos.airbnb$comments_utf8)
 ```
 
+However a close inspection of the entries with non-ascii Unicode characters showed that there were no 
+valid emojis to replace, only UTF-8 characters representing mostly entries in languages other than English.
 
-```{r punctuation-based emoticons}
-bos.airbnb$comments_enhanced2 <- mgsub(pattern = emoticon[,2], 
-                                       replacement = emoticon[,1], 
-                                       bos.airbnb$comments_ascii)
-```
+
+
 
