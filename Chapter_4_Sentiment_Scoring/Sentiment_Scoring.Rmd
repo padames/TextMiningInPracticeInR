@@ -52,8 +52,8 @@ In parenthesis the polar opposites:
 8. Joy (Sadness)
 
 The complexity of using sentiment analysis becomes aparent considering that there
-are many other frameworks for defining emotions. The main sourc of ambiguity and bias comes
-from labeling a training set of n-grams and emotions from a particular sentiment framework.
+are many other frameworks for defining emotions. The main source of ambiguity and bias comes
+from labeling a training set of _n-grams_ and emotions from a particular sentiment framework.
 
 ## Polarity
 
