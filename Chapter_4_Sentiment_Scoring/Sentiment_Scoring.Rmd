@@ -36,7 +36,7 @@ source(here("Chapter_2_Basics_of_Text_Mining", "Helpers.R"))
 From Chapter 4 of the book: `Sentiment analysis is the process of extracting an author's emotional intent from text`. This entails using liguistics, psychology and natural languaje processing.
 It is also a challenge to agree on the multiplicity of emotions and their cultural interpretation so there is always some degree of modelling/or analyst bias unless the specific intentions of the author are captured directly. Another reason for difficulty are contrasting sentiments on the same feature.
 
-Among the numerous emotional frameworks there is one we will use created by a psychologist by the name Robert Plutchik in the 80's. It consists of eight primary emotions supposed to be essential for the survival of men and animals. Each has a polar opposite and can be expressed with different levels of intensity. Besides this other emotions can be expressed as a blend of two or more of these basic eigth.
+Among the numerous emotional frameworks the one we will was created by a psychologist named Robert Plutchik in the 80's. It consists of eight primary emotions supposed to be essential for the survival of men and animals. Each has a polar opposite and can be expressed with different levels of intensity. Other emotions can be expressed as a blend of two or more of these basic eigth.
 
 ## Basic emotions in Plutchik' emotion model
 
