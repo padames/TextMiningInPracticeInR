@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Set Options
 options(stringsAsFactors = FALSE)
 Sys.setlocale('LC_ALL', 'C')
-
+library(knitr)
 library(dplyr)
 library(stringi)
 library(stringr)
@@ -22,6 +22,7 @@ library(ggplot2)
 library(ggthemes)
 library(tm)
 library(Unicode)
+library(gridExtra)
 library(here) # read https://www.tidyverse.org/articles/2017/12/workflow-vs-script/
 
 # package "here" assumes project file is in the root directory for relative paths to work
@@ -96,11 +97,11 @@ Here we will use the polarity function in the `qdap` package to do a simple but 
 
 This is a list of words associated with a particular emotional state. The `qdap` function uses a peer-reviewd subjectivity lexicon from Bing Liu at the University of Illinois, consisting of 6,800 labeled words. 
 
-A net polarity score can be calculated for a sentence by adding the positive or negative value of each word as per the subjectivity lexicon. The result is a negative, neutral, or positive tone for the excerpt. However this approach has to also consider amplifier and negaion words, so that an expression like "this is no good" results in a net negative value instead of neutral.
+A net polarity score can be calculated for a sentence by adding the positive or negative value of each word as per the subjectivity lexicon. The result is a negative, neutral, or positive tone for the excerpt. However this approach has to also consider amplifier and negation words, so that an expression like "this is no good" results in a net negative value instead of neutral.
 
 The lexicon can be customized to include terms specific to the text under analysis, to account for regionalisms, mannerisms, and so on.
 
-Zipf's law states that a word will be used inversely proportional to its rank in the frequency list. That is, the number of times the fifth most frequent word will apear in a corpus with N terms will be approximately N/5.
+Zipf's law states that a word will be used inversely proportional to its rank in the frequency list. That is, the number of times the fifth most frequent word will apear in a corpus with $N$ terms will be approximately $\tfrac{N}{5}$.
 
 This is explained by the least effort exerted by humans when trying to convey meaning in spite of the size of their vocabulary. A complicated message will promote disengagement from the other part, so a well researched lexicon will capture those most commonly used words relatively easily.
 
@@ -117,14 +118,19 @@ all.pos <- c(new.pos, positive.words) # original and new positive terms
 new.neg <- c('kappa','meh') # negative Airbnb terms for properties in Boston (from search)
 all.neg <- c(new.neg, negative.words)  # original and new negative terms
 all.polarity <- sentiment_frame(all.pos, all.neg)
-polarity('ROFL, look at that!', polarity.frame = all.polarity)
+p1 <- polarity('ROFL, look at that!', polarity.frame = all.polarity)
+kable(p1$group)
 ```
-
+```{r printing the results, include=FALSE}
+pdf("images/polarity_1.pdf",width = 11, height = 2)
+grid.table(p1$group)
+dev.off()
+```
 
 Compare this polarity with the one obtained using the standard lexicon:
 
 ```{r polarity using standard lexicon}
-polarity('ROFL, look at that!')
+kable(polarity('ROFL, look at that!')$group)
 ```
 
 This proves the need to include terms specific to the text under study.
@@ -133,13 +139,13 @@ This proves the need to include terms specific to the text under study.
 The same applies to the sentence `whatever you say, kappa`. Using the custom lexicon one gets a polarity result:
 
 ```{r second example of polarity using custom lexicon}
-polarity('whatever you say, kappa', polarity.frame = all.polarity)
+kable(polarity('whatever you say, kappa', polarity.frame = all.polarity)$group)
 ```
 
 But using the standard lexicon:
 
 ```{r second example of polarity using standard lexicon}
-polarity('whatever you say, kappa')
+kable(polarity('whatever you say, kappa')$group)
 ```
 
 ## Revisiting word clouds - Sentiment word clouds
