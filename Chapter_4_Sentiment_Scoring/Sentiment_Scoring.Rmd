@@ -223,7 +223,7 @@ p <- ggplot(data = bos.pol$all,
 p
 ```
 
-We see very few negative words and a peak in polarity around `r round(mean(bos.airbnb$polarities), digits = 2)`. On average every Airbnb review gets a positive word due to response bias in trying to conform to a social norm of *politeness*. This produces *grade inflation* of the positive words inserted in excess around the negative ones. In order to avoid this bias it is recommended to use the `scale` function that centers and scales the data around 0 using the mean as central reference and the standard deviation for scaling.
+We see very few negative words and a peak in polarity around `r round(mean(unlist(bos.pol$all["polarity"])), digits = 2)`. On average every Airbnb review gets a positive word due to response bias in trying to conform to a social norm of *politeness*. This produces *grade inflation* of the positive words inserted in excess around the negative ones. In order to avoid this bias it is recommended to use the `scale` function that centers and scales the data around 0 using the mean as central reference and the standard deviation for scaling.
 
 ```{r scaling polarity and its effects}
 # create a new column in original data frame:
@@ -231,7 +231,7 @@ polarities_original <- summary(as.vector(bos.pol$all$polarity))
 bos.pol$all$polarity <- scale(bos.pol$all$polarity) 
 polarities_scaled <- summary(as.vector(x = bos.pol$all$polarity))
 # table to compare before and after scaling and centering:
-round(cbind(polarities_original, polarities_scaled), 2) 
+kable(round(cbind(polarities_original, polarities_scaled), 2))
 ```
 
 Now lets subset the comments according to polarity.
