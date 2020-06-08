@@ -256,7 +256,7 @@ colnames(all.tdm.m) <- c('positive', 'negative')
 comparison.cloud(all.tdm.m, max.words = 100, colors = c('darkgreen', 'darkred'))
 ```
 
-The positive wors seem related to snacks, maybe the ability to take public transit
+The positive words seem related to snacks, maybe the ability to take public transit
 close to the property, luxury features(?), good value, and a feel of
 home. The negative seem related to cancelations from the property owner (?), lack of cleaningless,
 and maybe the lack of elevators.
@@ -308,24 +308,17 @@ comparison.cloud(all.tdm.simple.m2, max.words = 100, colors = c('darkgreen', 'da
 
 ## Emoticons 
 
-When using corpora from public social media chats or messege apps, an importan part of the
-emotional content of the text comes sprinkled with emoticons and emojis. If one wants to add
-their meaning into the sentiment analysis stream their identification and conversion into  
-words and text is useful and even necessary.
+When using corpora from public social media chats or messege apps, an importan part of the emotional content of the text comes sprinkled with emoticons and emojis. If one wants to add their meaning into the sentiment analysis stream their identification and conversion into words and text is useful and even necessary.
 
 The Airbnb reviews are an example of this.
-There are as a minimum `r sum(stri_detect(str = bos.airbnb$comments_original, regex = ":-\\)|:>|:<|:-D|:\\(|;\\)|:\\)"))` punctuation-based emoticons and some
-`r sum(stri_detect(str = bos.airbnb$comments_original,regex = "[^\x1F-\x7F]+"))` 
-emojis in the original Airbnb reviews.
+There are as a minimum `r sum(stri_detect(str = bos.airbnb$comments_original, regex = ":-\\)|:>|:<|:-D|:\\(|;\\)|:\\)"))` punctuation-based emoticons and some `r sum(stri_detect(str = bos.airbnb$comments_original,regex = "[^\x1F-\x7F]+"))` emojis in the original Airbnb reviews.
 
-The first set of emoticons that need to be identified and transformed are the UTF-8 based ones
-because their presence triggers errors like: **string 127 is invalid UTF-8** from many R functions.
-Let's identify, isolate, convert to text and replace the emojis first and once they are transformed
-into English words, we can proceed to identify and trnsform the punctuation-based emoticons.
+The first set of emoticons that need to be identified and transformed are the UTF-8 based ones because their presence triggers errors like: **string 127 is invalid UTF-8** from many R functions.
+Let's identify, isolate, convert to text and replace the emojis first and once they are transformed into English words, we can proceed to identify and transform the punctuation-based emoticons.
 
 First we load the file with the UTF-8 emoticon definitions and their corresponding R byte econding.
 This information was found in https://raw.githubusercontent.com/today-is-a-good-day/emojis/master/emojis.csv.
-The file was downloaded and a copy committed to this repo for redundancy. 
+The file was downloaded and a copy committed to this repo for reference and redundancy in case it gets moved from that repo in the future. 
 
 ```{r loading emoji definition and encodings file}
 if (file.exists(here("Chapter_4_Sentiment_Scoring","emoji.txt"))) {
